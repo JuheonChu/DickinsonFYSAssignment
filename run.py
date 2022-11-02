@@ -111,7 +111,7 @@ print("The time of execution of initializing variables is :",
       (end-start) * 10**3, "ms")
 
 # Load in data
-
+start = time.time()
 # seminar.dat
 seminar_courses = student_choices_df['seminar']
 students = student_choices_df['stu_id']
@@ -127,7 +127,11 @@ obj_coef_val = obj_coef_df['obj_coef']
 rank_idx =  rank_df['rank_index']
 rank_coef = rank_df['rank_weights']
 
+end = time.time()
+print("The time of execution of loading helper data is :",
+      (end-start) * 10**3, "ms")
 
+start = time.time()
 for j in range(len(STUDENTS)):
     citizenship[STUDENTS[j]] = stu_citizen[j]    
     
@@ -143,8 +147,12 @@ for j in range(len(rank_idx)):
 for i in range(len(students)):
     StudentChoice[(students[i], SEMINAR_PICK[i])] = seminar_courses[i]
 
+end = time.time()
+print("The time of execution of loading helper data is :",
+      (end-start) * 10**3, "ms")
 
 
+start = time.time()
 # Create variables
 for s in STUDENTS:
    for r in SEMINAR_PICK:
@@ -157,11 +165,16 @@ for k in SEMINARS:
     US_SEM[k] = model.addVar(name='US_SEM_{0}'.format(k))
     NonUS_SEM[k] = model.addVar(name='NonUS_SEM_{0}'.format(k))
     
+end = time.time()
+print("The time of execution of adding variables to the model is :",
+      (end-start) * 10**3, "ms")
+
+
 
 model.update()
 
 # Ensure every student is assigned to one of their seminars (NOT SURE)
-
+start = time.time()
 for i in STUDENTS: 
     model.addConstrs(x[(i,j)] == 1 for j in SEMINAR_PICK)
                         
@@ -187,38 +200,46 @@ for k in SEMINARS:
     model.addConstr(NonUS_SEM[k] == sum(x[(i,j)] for i in STUDENTS for j in SEMINAR_PICK 
         if StudentChoice[i,j] == k and gender[i] == 1))
 
-# Set seminar capacity
+# Set seminar capacity (Upper bound)
 for k in SEMINARS:
     model.addConstr(MSEM[k] + FSEM[k] <= 15)
-
-
-
-#    for i in STUDENTS:
-#       for j in SEMINARS:
-#           if StudentChoice[(i,j)] == k and gender[i] == 1:
-#    model.addConstrs(sum(x[i,j] for i in STUDENTS for j in SEMINAR_PICK | )
-#                NumberMale[k] = sum(x[i,j] for i in STUDENTS for j in SEMINAR_PICK)   
-#            NumberMale[k] = MSEM[k]
-            
-#for k in SEMINARS:
-#    model.addConstr(MSEM[k] == sum(x[i,j] for j in SEMINAR_PICK for i in STUDENTS))
-   
-
-# if StudentChoice[(i,j)] == k and gender[i] ==1)
-
-# Determine the number of females in each seminar
-
-
-
     
-#model.addConstr(-x+2*y <= 8)
-#model.addConstr(2*x + y <= 14)
+# Set seminar capacity (Lower bound)
 
-#model.addConstr(2*x - y <= 10)
+for k in SEMINARS:
+    if k != 30:
+        model.addConstr(MSEM[k] + FSEM[k] >= 10)
 
-#model.ModelSense = -1
+end = time.time()
+print("The time of setting constraints is :",
+      (end-start) * 10**3, "ms")
 
-#model.optimize()
+start = time.time()
+# Solve using Gurobi Solver
+opt = SolverFactory('gurobi')
+opt.options['TimeLimit'] = 120
+
+# Optimize over Seminar Ranking to determine Utopia points
+# minimize (sum(i in STUDENTS, j in SEMINAR_PICK) rank_weights(j)*x(i,j))
+# Thought process: 1. create another model
+# model = Model('zU_Rank Model')
+zU_Rank_Model = Model('zU_Rank Model')
+val = 0
+for i in STUDENTS:
+    for j in SEMINAR_PICK:
+        val+=rank_weights[j]*x[i,j]
+
+# Limit the time for solving utopian points in 2 minutes
+opt = SolverFactory('gurobi')
+opt.options['TimeLimit'] = 120
+zU_Rank_Model.setObjective(val, GRB.MINIMIZE)
+
+zU_Rank = zU_Rank_Model.solve(model, tee = True)
+print(zU_Rank)
+end = time.time()
+print("The time of execution of computing utopian points is :",
+      (end-start) * 10**3, "ms")
+
 
 # Solve using Gurobi solver
 #opt = SolverFactory('gurobi')
