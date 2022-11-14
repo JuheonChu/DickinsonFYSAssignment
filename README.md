@@ -8,3 +8,4 @@ This is an independent research conducted by John Chu and supervised by Professo
 - Hungarain Method
 - multi-objective convex quadratic functions
 - Normalization (Nadir Points, Pareto Utopian sets)
+- Python Gurobi solver
