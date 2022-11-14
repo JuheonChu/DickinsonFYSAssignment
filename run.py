@@ -2,7 +2,7 @@
 """
 Created on Mon Jun 20 01:46:08 2022
 
-@author: John Chu & Professor Forrester
+@author: 
 """
 
 
@@ -11,7 +11,7 @@ from gurobipy import GRB
 from gurobipy import LinExpr
 import pandas as pd
 import time
-
+import gurobipy as gp
 
 model = Model('Student Assignment Problem')
 
@@ -34,7 +34,7 @@ print("The time of Loading the excel data into the data frame is :",
 start = time.time()
 
 # initalizing student lists
-STUDENTS = gender_df['stu_id']
+STUDENTS = gender_df['stu_id'].tolist()
 
 
 SEMINARS = [1,2,3, 4,5,6,9,10,11,
@@ -43,7 +43,7 @@ SEMINARS = [1,2,3, 4,5,6,9,10,11,
 		        39,41,42,44,45,46,47]
 
 # initializing seminar pick lists from each student
-SEMINAR_PICK = student_choices_df['rank']
+SEMINAR_PICK = student_choices_df['rank'].tolist()
 
 end = time.time()
 print("The time of execution of initializing lists is :",
@@ -153,19 +153,32 @@ print("The time of execution of loading helper data is :",
 
 
 start = time.time()
-# Create variables
-for s in STUDENTS:
-   for r in SEMINAR_PICK:
-       x[(s,r)] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY,'x_{0}_{1}'.format(s,r)) 
-       #x[(s,r)] = model.addVar(vtype=GRB., name='x_{0}_{1}'.format(s,r))
-       
-# Model.add
-for k in SEMINARS:
-    FSEM[k] = model.addVar(name='FSEM_{0}'.format(k) )
-    MSEM[k] = model.addVar(name='MSEM_{0}'.format(k))
-    US_SEM[k] = model.addVar(name='US_SEM_{0}'.format(k))
-    NonUS_SEM[k] = model.addVar(name='NonUS_SEM_{0}'.format(k))
 
+
+# Create binary variables in x dictionary
+x = dict()
+
+for i in range(len(STUDENTS)):
+    for j in range(len([1,2,3,4,5,6])):
+        x[STUDENTS[i],SEMINAR_PICK[j]] = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, 'x('+str(STUDENTS[i]) + ','+str([1,2,3,4,5,6][j]) +')')   
+        
+
+
+model.write('dea.lp')
+
+
+FSEM = dict()
+MSEM = dict()
+US_SEM = dict()
+NonUS_SEM = dict()
+
+# Create the variables for number of males, females, US, and NonUS Students in course k
+for k in range(len(SEMINARS)):
+    FSEM[k] = model.addVar(obj = 1.0, name='FSEM('+str(SEMINARS[k])+')')
+    MSEM[k] = model.addVar(obj = 1.0,name='MSEM('+str(SEMINARS[k])+')')
+    US_SEM[k] = model.addVar(obj = 1.0,name='US_SEM('+str(SEMINARS[k])+')')
+    NonUS_SEM[k] = model.addVar(obj = 1.0,name='NonUS_SEM('+str(SEMINARS[k])+')')
+    
 
 
 end = time.time()
@@ -173,71 +186,82 @@ print("The time of execution of adding variables to the model is :",
       (end-start) * 1, "seconds")
 
 
+# Update Variables and constraints
+# model.update()
 
 
 # Ensure every student is assigned to one of their seminars (NOT SURE)
 start = time.time()
 value = LinExpr()
 
-for i in STUDENTS: 
-    value = 0
-    for j in SEMINAR_PICK:
-        value += x[(i,j)]
-    model.addConstr(value == 1)
 
+# Add the constraint
+for i in STUDENTS:
+    val = 0
+    for j in [1,2,3,4,5,6]:
+        val += x[i,j]
+    model.addConstr(val == 1, 'AssignCost('+str(i) + ')') 
+
+model.write('Assignment.lp')    
                         
 
-# Create a blank linear expression
-exprMale = LinExpr()
+exprMale= LinExpr()
 exprFemale = LinExpr()
 exprUS = LinExpr()
 exprNonUS = LinExpr()
-  
     
 for k in SEMINARS: 
     
-    # Reset the expression for every k
+    
+    MSEM[k] = 0
+    FSEM[k] = 0
+    US_SEM[k] = 0
+    NonUS_SEM[k] = 0
+    
     exprMale = 0
     exprFemale = 0
     exprUS = 0
     exprNonUS = 0
-    #MSEM[k] = 0
-    #FSEM[k] = 0
-    #US_SEM[k] = 0
-    #NonUS_SEM[k] = 0
     
-    model.addVar(name='FSEM_{0}'.format(k))
-    model.addVar(name='MSEM_{0}'.format(k))
-    model.addVar(name='US_SEM_{0}'.format(k))
-    model.addVar(name='NonUS_SEM_{0}'.format(k))
-    
+ 
     # Build them back out 
     for i in STUDENTS:
-        for j in SEMINAR_PICK:
+        for j in [1,2,3,4,5,6]:
         
             if StudentChoice[i,j] == k:
+                # male = 1, female = 0
                 if gender[i] == 1:
-                    exprMale += 1
+                    exprMale += x[i,j]
+                    MSEM[k] += 1
+                    #MSEM[k] += x[i,j]
+                    #model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
                 else:
-                    exprFemale += 1
-    		
+                    #exprFemale += 1
+                    exprFemale += x[i,j]
+                    FSEM[k] += 1
+    		    # US = 1, international = 0
                 if citizenship[i] == 1:
-                    exprUS += 1
+                    #exprUS += 1
+                    exprUS += x[i,j]
+                    US_SEM[k] += 1
                 else:
-                    exprNonUS += 1
-				
-    model.addConstr(MSEM[k] == exprMale)
-    model.addConstr(FSEM[k] == exprFemale)
-    model.addConstr(US_SEM[k] == exprUS)
-    model.addConstr(NonUS_SEM[k] == exprNonUS)
-    
+                    #exprNonUS += 1
+                    exprNonUS += x[i,j]
+                    NonUS_SEM[k] += 1
+			
+    print(exprMale)
+    model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
+    model.addConstr(FSEM[k] == exprFemale, 'NumberFemale('+str(k) +')')
+    model.addConstr(US_SEM[k] == exprUS, 'NumberUS('+str(k) +')')
+    model.addConstr(NonUS_SEM[k] == exprNonUS, 'NumberNonUS('+str(k) +')')
+     
     # Set seminar capacity (Upper bound)
-    model.addConstr(MSEM[k] + FSEM[k] <= 15)
+    model.addConstr(MSEM[k] + FSEM[k] <= 15, 'Capacity('+str(k)+')')
     
     # Set seminar lower bound capacity
     if k != 30: 
-        model.addConstr(MSEM[k] + FSEM[k] >= 10)
-    
+        model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
+model.write('capacity.lp')    
   
 end = time.time()
 
@@ -245,40 +269,39 @@ print("The time of setting constraints is :",
       (end-start) * 1, "seconds")
 
 
-
-val = LinExpr()
-val = 0
-for i in STUDENTS:
-    for j in SEMINAR_PICK:
-        val+=rank_weights[j]*x[i,j]
-
-
-model.setObjective(val, GRB.MINIMIZE)
-
-# Update Variables and constraints
-model.update()
-
-model.setParam('TimeLimit', 2*60)
+#val = LinExpr()
+#val = 0
+#for i in STUDENTS:
+#    for j in SEMINAR_PICK:
+#        val+=rank_weights[j]*x[i,j]
 
 
-start = time.time()
+#model.setObjective(val, GRB.MINIMIZE)
+
+
+#model.setParam('TimeLimit', 2*60)
+
+#start = time.time()
 
 # Optimize  
-model.optimize()
-end = time.time()
-print("Time execution of optimizing the model is : ", (end-start) * 1, "seconds")
-# Compute an Irreducible Inconsistent Subsystem (IIS)
-model.computeIIS()
-model.write("model1.ilp")
+model.write("Dickinson.lp")
+#exit(0)
+#model.optimize()
 
-if model.status == GRB.INFEASIBLE:
-    model.feasRelaxS(1, False, False, True)
-    start = time.time()
+#end = time.time()
+#print("Time execution of optimizing the model is : ", (end-start) * 1, "seconds")
+
+
+
+
+#if model.status == GRB.INFEASIBLE:
+#    model.feasRelaxS(1, False, False, True)
+#    start = time.time()
 
     # Optimize  
-    model.optimize()
-    end = time.time()
-    print("Time execution of optimizing (releaxation) the model is : ", (end-start) * 1, "seconds")
+#    model.optimize()
+#    end = time.time()
+#    print("Time execution of optimizing (releaxation) the model is : ", (end-start) * 1, "seconds")
    
 
 #zU_Rank = model.objVal 
@@ -291,21 +314,4 @@ if model.status == GRB.INFEASIBLE:
 #    model.feasRelax(1, False, vars, None, ubpen, None, None)
 #    model.optimize()
 
-end = time.time()
-print("The time of execution of computing utopian points is :",
-      (end-start) * 1, "seconds")
 
-
-
-
-
-# Solve using Gurobi solver
-#opt = SolverFactory('gurobi')
-# Make sure to run in 2 minutes
-#opt.options['TimeLimit'] = 120
-#results = opt.solve(model, tee = True)
-
-
-# Print the solution
-#print('x= ', x.X)
-#print('y= ', y.X)
