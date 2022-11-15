@@ -156,7 +156,6 @@ start = time.time()
 
 
 # Create binary variables in x dictionary
-x = dict()
 
 for i in range(len(STUDENTS)):
     for j in range(len([1,2,3,4,5,6])):
@@ -167,19 +166,15 @@ for i in range(len(STUDENTS)):
 model.write('dea.lp')
 
 
-FSEM = dict()
-MSEM = dict()
-US_SEM = dict()
-NonUS_SEM = dict()
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
-for k in range(len(SEMINARS)):
-    FSEM[k] = model.addVar(obj = 1.0, name='FSEM('+str(SEMINARS[k])+')')
-    MSEM[k] = model.addVar(obj = 1.0,name='MSEM('+str(SEMINARS[k])+')')
-    US_SEM[k] = model.addVar(obj = 1.0,name='US_SEM('+str(SEMINARS[k])+')')
-    NonUS_SEM[k] = model.addVar(obj = 1.0,name='NonUS_SEM('+str(SEMINARS[k])+')')
+for k in SEMINARS:
+    FSEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
+    MSEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
+    US_SEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
+    NonUS_SEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
     
-
+#FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
 end = time.time()
 print("The time of execution of adding variables to the model is :",
@@ -192,7 +187,6 @@ print("The time of execution of adding variables to the model is :",
 
 # Ensure every student is assigned to one of their seminars (NOT SURE)
 start = time.time()
-value = LinExpr()
 
 
 # Add the constraint
@@ -205,18 +199,8 @@ for i in STUDENTS:
 model.write('Assignment.lp')    
                         
 
-exprMale= LinExpr()
-exprFemale = LinExpr()
-exprUS = LinExpr()
-exprNonUS = LinExpr()
     
 for k in SEMINARS: 
-    
-    
-    MSEM[k] = 0
-    FSEM[k] = 0
-    US_SEM[k] = 0
-    NonUS_SEM[k] = 0
     
     exprMale = 0
     exprFemale = 0
@@ -224,7 +208,7 @@ for k in SEMINARS:
     exprNonUS = 0
     
  
-    # Build them back out 
+    
     for i in STUDENTS:
         for j in [1,2,3,4,5,6]:
         
@@ -232,24 +216,24 @@ for k in SEMINARS:
                 # male = 1, female = 0
                 if gender[i] == 1:
                     exprMale += x[i,j]
-                    MSEM[k] += 1
+                    #MSEM[k] +=x[i,j]
                     #MSEM[k] += x[i,j]
                     #model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
                 else:
                     #exprFemale += 1
                     exprFemale += x[i,j]
-                    FSEM[k] += 1
+                    #FSEM[k] += 1
     		    # US = 1, international = 0
                 if citizenship[i] == 1:
                     #exprUS += 1
                     exprUS += x[i,j]
-                    US_SEM[k] += 1
+                    #US_SEM[k] += 1
                 else:
                     #exprNonUS += 1
                     exprNonUS += x[i,j]
-                    NonUS_SEM[k] += 1
+                    #NonUS_SEM[k] += 1
 			
-    print(exprMale)
+    
     model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
     model.addConstr(FSEM[k] == exprFemale, 'NumberFemale('+str(k) +')')
     model.addConstr(US_SEM[k] == exprUS, 'NumberUS('+str(k) +')')
@@ -270,21 +254,20 @@ print("The time of setting constraints is :",
 
 
 #val = LinExpr()
-#val = 0
-#for i in STUDENTS:
-#    for j in SEMINAR_PICK:
-#        val+=rank_weights[j]*x[i,j]
+val = 0
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]:
+        val+=rank_weights[j]*x[i,j]
 
+model.setObjective(val, GRB.MINIMIZE)
 
-#model.setObjective(val, GRB.MINIMIZE)
-
-
+model.write('Genius.lp')
 #model.setParam('TimeLimit', 2*60)
 
 #start = time.time()
 
 # Optimize  
-model.write("Dickinson.lp")
+#model.write("Dickinson.lp")
 #exit(0)
 #model.optimize()
 
