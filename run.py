@@ -44,7 +44,7 @@ SEMINARS = [1,2,3, 4,5,6,9,10,11,
 
 # initializing seminar pick lists from each student
 SEMINAR_PICK = student_choices_df['rank'].tolist()
-
+print(SEMINAR_PICK)
 end = time.time()
 print("The time of execution of initializing lists is :",
       (end-start) * 10**3, "ms")
@@ -169,10 +169,10 @@ model.write('dea.lp')
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
 for k in SEMINARS:
-    FSEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
-    MSEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
-    US_SEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
-    NonUS_SEM[k] = model.addVar(0.0, 1.0, 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
+    FSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
+    MSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
+    US_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
+    NonUS_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
     
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
@@ -199,6 +199,10 @@ for i in STUDENTS:
 model.write('Assignment.lp')    
                         
 
+#exprMale= LinExpr()
+#exprFemale = LinExpr()
+#exprUS = LinExpr()
+#exprNonUS = LinExpr()
     
 for k in SEMINARS: 
     
@@ -208,7 +212,7 @@ for k in SEMINARS:
     exprNonUS = 0
     
  
-    
+    # Build them back out 
     for i in STUDENTS:
         for j in [1,2,3,4,5,6]:
         
@@ -233,7 +237,7 @@ for k in SEMINARS:
                     exprNonUS += x[i,j]
                     #NonUS_SEM[k] += 1
 			
-    
+    #print(exprUS)
     model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
     model.addConstr(FSEM[k] == exprFemale, 'NumberFemale('+str(k) +')')
     model.addConstr(US_SEM[k] == exprUS, 'NumberUS('+str(k) +')')
@@ -253,7 +257,7 @@ print("The time of setting constraints is :",
       (end-start) * 1, "seconds")
 
 
-#val = LinExpr()
+
 val = 0
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
@@ -261,22 +265,28 @@ for i in STUDENTS:
 
 model.setObjective(val, GRB.MINIMIZE)
 
-model.write('Genius.lp')
-#model.setParam('TimeLimit', 2*60)
 
-#start = time.time()
+model.setParam('TimeLimit', 120)
+
 
 # Optimize  
-#model.write("Dickinson.lp")
-#exit(0)
-#model.optimize()
 
-#end = time.time()
-#print("Time execution of optimizing the model is : ", (end-start) * 1, "seconds")
+model.optimize()
+
+zU_Rank = model.getObjective().getValue()
+print('utopian rank ' + str(zU_Rank))
+total = 0
+for j in SEMINARS:
+    total += (MSEM[j] - FSEM[j])*(MSEM[j] - FSEM[j])
 
 
+model.setObjective(total, GRB.MINIMIZE)
 
 
+model.optimize()
+
+zU_Gender = model.getObjective().getValue()
+print('Gender penalty: ' + str(zU_Gender))
 #if model.status == GRB.INFEASIBLE:
 #    model.feasRelaxS(1, False, False, True)
 #    start = time.time()
