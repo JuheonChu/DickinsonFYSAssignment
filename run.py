@@ -2,7 +2,7 @@
 """
 Created on Mon Jun 20 01:46:08 2022
 
-@author: 
+@author: John Chu 
 """
 
 
@@ -15,8 +15,6 @@ import gurobipy as gp
 
 model = Model('Student Assignment Problem')
 
-# Time Checking
-start = time.time()
 
 # Loading in the excel file
 student_choices_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name='seminar')
@@ -25,13 +23,11 @@ gender_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'gen
 obj_coef_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'obj_coef')
 rank_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'rank_weights')
 
-end = time.time()
-print("The time of Loading the excel data into the data frame is :",
-      (end-start) * 1, "seconds")
+
 
 
 # Time Checking
-start = time.time()
+
 
 # initalizing student lists
 STUDENTS = gender_df['stu_id'].tolist()
@@ -44,15 +40,8 @@ SEMINARS = [1,2,3, 4,5,6,9,10,11,
 
 # initializing seminar pick lists from each student
 SEMINAR_PICK = student_choices_df['rank'].tolist()
-print(SEMINAR_PICK)
-end = time.time()
-print("The time of execution of initializing lists is :",
-      (end-start) * 10**3, "ms")
 
 
-
-# Time Checking
-start = time.time()
 
 # Parameters
 StudentChoice = dict()
@@ -105,12 +94,10 @@ num6 = 0
 num5 = 0 
 
 
-end = time.time()
-print("The time of execution of initializing variables is :",
-      (end-start) * 1, "seconds")
+
 
 # Load in data
-start = time.time()
+
 # seminar.dat
 seminar_courses = student_choices_df['seminar']
 students = student_choices_df['stu_id']
@@ -126,11 +113,7 @@ obj_coef_val = obj_coef_df['obj_coef']
 rank_idx =  rank_df['rank_index']
 rank_coef = rank_df['rank_weights']
 
-end = time.time()
-print("The time of execution of loading helper data is :",
-      (end-start) * 1, "seconds")
 
-start = time.time()
 
 for j in range(len(STUDENTS)):
     citizenship[STUDENTS[j]] = stu_citizen[j]    
@@ -146,24 +129,16 @@ for j in range(len(rank_idx)):
 for i in range(len(students)):
     StudentChoice[(students[i], SEMINAR_PICK[i])] = seminar_courses[i]
 
-end = time.time()
-
-print("The time of execution of loading helper data is :",
-      (end-start) * 1, "seconds")
 
 
-start = time.time()
+
 
 
 # Create binary variables in x dictionary
-
 for i in range(len(STUDENTS)):
     for j in range(len([1,2,3,4,5,6])):
         x[STUDENTS[i],SEMINAR_PICK[j]] = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, 'x('+str(STUDENTS[i]) + ','+str([1,2,3,4,5,6][j]) +')')   
         
-
-
-model.write('dea.lp')
 
 
 
@@ -176,17 +151,8 @@ for k in SEMINARS:
     
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
-end = time.time()
-print("The time of execution of adding variables to the model is :",
-      (end-start) * 1, "seconds")
 
 
-# Update Variables and constraints
-# model.update()
-
-
-# Ensure every student is assigned to one of their seminars (NOT SURE)
-start = time.time()
 
 
 # Add the constraint
@@ -196,7 +162,7 @@ for i in STUDENTS:
         val += x[i,j]
     model.addConstr(val == 1, 'AssignCost('+str(i) + ')') 
 
-model.write('Assignment.lp')    
+
                         
 
 #exprMale= LinExpr()
@@ -251,19 +217,16 @@ for k in SEMINARS:
         model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
 model.write('capacity.lp')    
   
-end = time.time()
-
-print("The time of setting constraints is :",
-      (end-start) * 1, "seconds")
 
 
-
-val = 0
+rank_val = 0
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
-        val+=rank_weights[j]*x[i,j]
+        rank_val += rank_weights[j]*x[i,j]
 
-model.setObjective(val, GRB.MINIMIZE)
+utopian_rank = rank_val
+
+model.setObjective(rank_val, GRB.MINIMIZE)
 
 
 model.setParam('TimeLimit', 120)
@@ -274,37 +237,243 @@ model.setParam('TimeLimit', 120)
 model.optimize()
 
 zU_Rank = model.getObjective().getValue()
-print('utopian rank ' + str(zU_Rank))
-total = 0
+
+gender_penalty = 0
 for j in SEMINARS:
-    total += (MSEM[j] - FSEM[j])*(MSEM[j] - FSEM[j])
+    gender_penalty += (MSEM[j] - FSEM[j])*(MSEM[j] - FSEM[j])
 
+utopian_gender = gender_penalty
 
-model.setObjective(total, GRB.MINIMIZE)
+model.setObjective(gender_penalty, GRB.MINIMIZE)
 
 
 model.optimize()
 
 zU_Gender = model.getObjective().getValue()
-print('Gender penalty: ' + str(zU_Gender))
-#if model.status == GRB.INFEASIBLE:
-#    model.feasRelaxS(1, False, False, True)
-#    start = time.time()
-
-    # Optimize  
-#    model.optimize()
-#    end = time.time()
-#    print("Time execution of optimizing (releaxation) the model is : ", (end-start) * 1, "seconds")
-   
-
-#zU_Rank = model.objVal 
-#print(zU_Rank)
-
-# Relaxation
-#if model.status == GRB.INFEASIBLE:
-#    vars = model.getVars()
-#    ubpen = [1.0]*model.numVars
-#    model.feasRelax(1, False, vars, None, ubpen, None, None)
-#    model.optimize()
 
 
+
+citizenship_penalty = 0
+for j in SEMINARS:
+    citizenship_penalty += (US_SEM[j]-NonUS_SEM[j])*(US_SEM[j]-NonUS_SEM[j])
+
+utopian_citizenship = citizenship_penalty
+
+model.setObjective(citizenship_penalty, GRB.MINIMIZE)
+
+model.optimize()
+
+zU_Citizen = model.getObjective().getValue()
+
+# Set the maximum solve time for complete model (in seconds)
+model.setParam('TimeLimit', 600)
+
+# Optimize over the weighted (and scaled) objective function
+
+rank_objective = 0
+
+
+rank_objective = rank_val / -zU_Rank 
+
+gender_objective = 0
+
+
+gender_objective = gender_penalty / zU_Gender
+
+citizenship_objective = 0
+
+citizenship_objective = citizenship_penalty / zU_Citizen
+
+obj_function = (obj_coef[1] * rank_objective) + (obj_coef[2] * gender_objective) + (obj_coef[3]*citizenship_objective) 
+
+model.setObjective(obj_function, GRB.MINIMIZE)
+
+model.optimize()
+
+optimal_value = model.getObjective().getValue()
+
+
+
+
+# Print out the solution
+
+print("The total number of first-year students: " + str(len(STUDENTS)))
+print("The total number of seminars: " + str(len(SEMINARS)))
+print("")
+
+tot_female = 0
+tot_male = 0
+tot_US = 0
+tot_NonUS = 0
+for k in SEMINARS:
+    tot_female += FSEM[k]
+    tot_male += MSEM[k]
+    tot_US += US_SEM[k]
+    tot_NonUS += NonUS_SEM[k]
+print("Number of female students: " + str(tot_female))
+print("Number of male students: " + str(tot_male))
+print("")
+print("Number of US Citizens: " + str(tot_US))
+print("Number of Non US Citizens: " + str(tot_NonUS))
+print("")
+print("  Rank weight 1: ", rank_weights('1'))
+print("  Rank weight 2: ", rank_weights('2'))
+print("  Rank weight 3: ", rank_weights('3'))
+print("  Rank weight 4: ", rank_weights('4'))
+print("  Rank weight 5: ", rank_weights('5'))
+print("  Rank weight 6: ", rank_weights('6'))
+print("")
+print("  Objective Coefficient 1: ", obj_coef(1))
+print("  Objective Coefficient 2: ", obj_coef(2))
+print("  Objective Coefficient 3: ", obj_coef(3))
+print("")
+print("================================================")
+
+if tot_male + tot_female >= len(STUDENTS)-0.5:
+    print("All students were assigned")
+else:
+    print("Not all students were assigned!")
+    print("")
+    print("Num assigned: " + str(tot_male + tot_female))
+    print("Num students: ", len(STUDENTS))
+ 
+print("")
+print("================================================")
+
+for i in STUDENTS:
+    if x[i,1] == 1:
+        numFirstChoice+=1
+    
+    if x[i,2] == 1:
+        numSecondChoice +=1
+    
+    if x[i,3] == 1:
+        numThirdChoice += 1
+    
+    if x[i,4] == 1:
+        numFourthChoice += 1
+    
+    if x[i,5] == 1:
+        numFifthChoice += 1
+    
+    if x[i,6] == 1:
+        numSixthChoice += 1
+
+for k in SEMINARS:
+    if FSEM[k] + MSEM[k] >= 15.5:
+        num16 += 1
+    elif FSEM[k] + MSEM[k] >= 14.5:
+        num15 += 1
+    elif FSEM[k] + MSEM[k] >= 13.5:
+        num14 += 1
+    elif FSEM[k] + MSEM[k] >= 12.5:
+        num13 += 1
+    elif FSEM[k] + MSEM[k] >= 11.5:
+        num12 += 1
+    elif FSEM[k] + MSEM[k] >= 10.5:
+        num11 += 1
+    elif FSEM[k] + MSEM[k] >= 9.5:
+        num10 += 1
+    elif FSEM[k] + MSEM[k] >= 8.5:
+        num9 += 1
+    elif FSEM[k] + MSEM[k] >= 7.5:
+        num8 += 1
+    elif FSEM[k] + MSEM[k] >= 6.5:
+        num7 += 1
+    elif FSEM[k] + MSEM[k] >= 5.5:
+        num6 += 1
+    elif FSEM[k] + MSEM[k] >= 4.5:
+        num5 += 1
+
+print("" + str(numFirstChoice) + " (" + str(numFirstChoice/len(STUDENTS)*100) + "%) students were assigned their first-choice.")
+print("" + str(numSecondChoice) + " (" + str(numSecondChoice/len(STUDENTS)*100) + "%) students were assigned their second-choice.")
+print("" + str(numThirdChoice) + " (" + str(numThirdChoice/len(STUDENTS)*100) + "%) students were assigned their third-choice.")
+print("" + str(numFourthChoice) + " (" + str(numFourthChoice/len(STUDENTS)*100) + "%) students were assigned their fourth-choice.")
+print("" + str(numFifthChoice) + " (" + str(numFifthChoice/len(STUDENTS)*100) + "%) students were assigned their fifth-choice.")
+print("" + str(numSixthChoice) + " (" + str(numSixthChoice/len(STUDENTS)*100) + "%) students were assigned their sixth-choice.")
+print("")
+print("================================================")
+print("")
+
+
+if num16 > 0:
+  print("" + str(num16) + " seminars have 16 students")
+
+if num15 > 0:
+  print("", num15, " seminars have 15 students")
+
+
+if num14 > 0:
+  print("" + str(num14) + " seminars have 14 students")
+
+
+if (num13 > 0):
+  print("" + str(num13) + " seminars have 13 students")
+
+
+if num12 > 0:
+  print("" + str(num12) + " seminars have 12 students")
+
+
+if (num11 > 0):
+  print("" + str(num11) + " seminars have 11 students")
+
+
+if num10 > 0:
+  print("" + str(num10) + " seminars have 10 students")
+
+
+if num9 > 0:
+  print("" + str(num9) + " seminars have 9 students")
+
+
+if num8 > 0:
+  print("" + str(num8) + " seminars have 8 students")
+
+
+if num7 > 0:
+  print("" + str(num7) + " seminars have 7 students")
+
+
+if num6 > 0:
+  print(""+ str(num6) + " seminars have 6 students")
+
+
+if num5 > 0:
+  print("" + str(num5) + " seminars have 5 students")
+
+print("")
+print("================================================")
+print("")
+
+
+print("Rank Utopia is: " + str(zU_Rank))
+print("Gender Utopia is: " + str(zU_Gender))
+print("Citizen Utopia is: " + str(zU_Citizen))
+print("Ethnic Utopia is: " + str(zU_Citizen))
+print("")
+print("Rank Value is: " + str(utopian_rank))
+print("Gender Penalty is: " + str(utopian_gender))
+print("Citizenship Penalty is: " + str(utopian_citizenship))
+print("")
+print("================================================")
+
+
+for k in SEMINARS:
+    print("Seminar " + str(k) + " has " + str(FSEM[k] + MSEM[k]) + 
+        " students with " + str(MSEM(k)) + " males and " + str(FSEM(k)) + " females; " +
+        str(US_SEM(k)) + " US and " + str(NonUS_SEM(k)) + " non-US; ")
+
+# Output actually assignment
+f = open("assignments.txt", encoding = 'utf-8')
+
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]: 
+        if x[i,j] > 0.99:
+            print("" + str(i) + "\t" + StudentChoice[i,j])
+    
+
+f.close()
+
+
+        
