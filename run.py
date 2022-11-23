@@ -168,11 +168,7 @@ for i in STUDENTS:
 
                         
 
-#exprMale= LinExpr()
-#exprFemale = LinExpr()
-#exprUS = LinExpr()
-#exprNonUS = LinExpr()
-    
+
 for k in SEMINARS: 
     
     exprMale = 0
@@ -189,24 +185,18 @@ for k in SEMINARS:
                 # male = 1, female = 0
                 if gender[i] == 1:
                     exprMale += x[i,j]
-                    #MSEM[k] +=x[i,j]
-                    #MSEM[k] += x[i,j]
-                    #model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
+                   
                 else:
-                    #exprFemale += 1
-                    exprFemale += x[i,j]
-                    #FSEM[k] += 1
+                   exprFemale += x[i,j]
     		    # US = 1, international = 0
                 if citizenship[i] == 1:
                     #exprUS += 1
                     exprUS += x[i,j]
                     #US_SEM[k] += 1
                 else:
-                    #exprNonUS += 1
                     exprNonUS += x[i,j]
-                    #NonUS_SEM[k] += 1
 			
-    #print(exprUS)
+
     model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
     model.addConstr(FSEM[k] == exprFemale, 'NumberFemale('+str(k) +')')
     model.addConstr(US_SEM[k] == exprUS, 'NumberUS('+str(k) +')')
@@ -225,7 +215,6 @@ for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
         rank_val += rank_weights[j]*x[i,j]
 
-utopian_rank = rank_val
 
 model.setObjective(rank_val, GRB.MINIMIZE)
 
@@ -243,9 +232,9 @@ gender_penalty = 0
 for j in SEMINARS:
     gender_penalty += (MSEM[j] - FSEM[j])*(MSEM[j] - FSEM[j])
 
-utopian_gender = gender_penalty
 
 model.setObjective(gender_penalty, GRB.MINIMIZE)
+
 
 
 model.optimize()
@@ -258,7 +247,6 @@ citizenship_penalty = 0
 for j in SEMINARS:
     citizenship_penalty += (US_SEM[j]-NonUS_SEM[j])*(US_SEM[j]-NonUS_SEM[j])
 
-utopian_citizenship = citizenship_penalty
 
 model.setObjective(citizenship_penalty, GRB.MINIMIZE)
 
@@ -452,6 +440,19 @@ print("================================================")
 print("")
 
 
+
+utopian_rank = 0
+utopian_gender = 0
+utopian_citizen = 0
+
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]:
+        utopian_rank += rank_weights[j]*x[i,j].X
+
+for j in SEMINARS:
+    utopian_gender += (MSEM[k].X - FSEM[k].X)* (MSEM[k].X - FSEM[k].X)
+    utopian_citizen += (US_SEM[k].X - NonUS_SEM[k].X) * (US_SEM[k].X - NonUS_SEM[k].X)
+
 print("Rank Utopia is: " + str(zU_Rank))
 print("Gender Utopia is: " + str(zU_Gender))
 print("Citizen Utopia is: " + str(zU_Citizen))
@@ -459,7 +460,7 @@ print("Ethnic Utopia is: " + str(zU_Citizen))
 print("")
 print("Rank Value is: " + str(utopian_rank))
 print("Gender Penalty is: " + str(utopian_gender))
-print("Citizenship Penalty is: " + str(utopian_citizenship))
+print("Citizenship Penalty is: " + str(utopian_citizen))
 print("")
 print("================================================")
 
