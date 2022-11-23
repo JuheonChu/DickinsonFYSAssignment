@@ -2,7 +2,7 @@
 """
 Created on Mon Jun 20 01:46:08 2022
 
-@author: John Chu 
+@author: John Chu & Professor Dick Forrester
 """
 
 
@@ -101,14 +101,17 @@ num5 = 0
 # seminar.dat
 seminar_courses = student_choices_df['seminar']
 students = student_choices_df['stu_id']
-# citizenship.dat
 
+# citizenship.dat
 stu_citizen = citizenship_df['citizen']
+
 # gender.dat
 stu_gender = gender_df['gender']
+
 # obj_coef.dat (1: 69, 2: 20, 3: 40)
 obj_coef_key = obj_coef_df['obj_coef_key']
 obj_coef_val = obj_coef_df['obj_coef'] 
+
 # rank.dat 
 rank_idx =  rank_df['rank_index']
 rank_coef = rank_df['rank_weights']
@@ -305,31 +308,35 @@ tot_female = 0
 tot_male = 0
 tot_US = 0
 tot_NonUS = 0
+
 for k in SEMINARS:
-    tot_female += FSEM[k]
-    tot_male += MSEM[k]
-    tot_US += US_SEM[k]
-    tot_NonUS += NonUS_SEM[k]
+    tot_female += FSEM[k].X
+    
+    tot_male += MSEM[k].X
+    tot_US += US_SEM[k].X
+    tot_NonUS += NonUS_SEM[k].X
+    
+    
 print("Number of female students: " + str(tot_female))
 print("Number of male students: " + str(tot_male))
 print("")
 print("Number of US Citizens: " + str(tot_US))
 print("Number of Non US Citizens: " + str(tot_NonUS))
 print("")
-print("  Rank weight 1: ", rank_weights('1'))
-print("  Rank weight 2: ", rank_weights('2'))
-print("  Rank weight 3: ", rank_weights('3'))
-print("  Rank weight 4: ", rank_weights('4'))
-print("  Rank weight 5: ", rank_weights('5'))
-print("  Rank weight 6: ", rank_weights('6'))
+print("  Rank weight 1: ", rank_weights[1])
+print("  Rank weight 2: ", rank_weights[2])
+print("  Rank weight 3: ", rank_weights[3])
+print("  Rank weight 4: ", rank_weights[4])
+print("  Rank weight 5: ", rank_weights[5])
+print("  Rank weight 6: ", rank_weights[6])
 print("")
-print("  Objective Coefficient 1: ", obj_coef(1))
-print("  Objective Coefficient 2: ", obj_coef(2))
-print("  Objective Coefficient 3: ", obj_coef(3))
+print("  Objective Coefficient 1: ", obj_coef[1])
+print("  Objective Coefficient 2: ", obj_coef[2])
+print("  Objective Coefficient 3: ", obj_coef[3])
 print("")
 print("================================================")
 
-if tot_male + tot_female >= len(STUDENTS)-0.5:
+if (tot_male + tot_female) >= (len(STUDENTS)-0.5):
     print("All students were assigned")
 else:
     print("Not all students were assigned!")
@@ -341,8 +348,9 @@ print("")
 print("================================================")
 
 for i in STUDENTS:
-    if x[i,1] == 1:
-        numFirstChoice+=1
+    if x[i,1] <= 1:
+        if x[i,1] >= 1:
+            numFirstChoice+=1
     
     if x[i,2] == 1:
         numSecondChoice +=1
@@ -360,29 +368,29 @@ for i in STUDENTS:
         numSixthChoice += 1
 
 for k in SEMINARS:
-    if FSEM[k] + MSEM[k] >= 15.5:
+    if FSEM[k].getValue() + MSEM[k].getValue() >= 15.5:
         num16 += 1
-    elif FSEM[k] + MSEM[k] >= 14.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 14.5:
         num15 += 1
-    elif FSEM[k] + MSEM[k] >= 13.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 13.5:
         num14 += 1
-    elif FSEM[k] + MSEM[k] >= 12.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 12.5:
         num13 += 1
-    elif FSEM[k] + MSEM[k] >= 11.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 11.5:
         num12 += 1
-    elif FSEM[k] + MSEM[k] >= 10.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 10.5:
         num11 += 1
-    elif FSEM[k] + MSEM[k] >= 9.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 9.5:
         num10 += 1
-    elif FSEM[k] + MSEM[k] >= 8.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 8.5:
         num9 += 1
-    elif FSEM[k] + MSEM[k] >= 7.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 7.5:
         num8 += 1
-    elif FSEM[k] + MSEM[k] >= 6.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 6.5:
         num7 += 1
-    elif FSEM[k] + MSEM[k] >= 5.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 5.5:
         num6 += 1
-    elif FSEM[k] + MSEM[k] >= 4.5:
+    elif FSEM[k].getValue() + MSEM[k].getValue() >= 4.5:
         num5 += 1
 
 print("" + str(numFirstChoice) + " (" + str(numFirstChoice/len(STUDENTS)*100) + "%) students were assigned their first-choice.")
@@ -460,9 +468,9 @@ print("================================================")
 
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(FSEM[k] + MSEM[k]) + 
-        " students with " + str(MSEM(k)) + " males and " + str(FSEM(k)) + " females; " +
-        str(US_SEM(k)) + " US and " + str(NonUS_SEM(k)) + " non-US; ")
+    print("Seminar " + str(k) + " has " + str(FSEM[k].getValue() + MSEM[k].getValue()) + 
+        " students with " + str(MSEM[k].getVAlue()) + " males and " + str(FSEM[k].getValue()) + " females; " +
+        str(US_SEM[k].getValue()) + " US and " + str(NonUS_SEM[k].getValue()) + " non-US; ")
 
 # Output actually assignment
 f = open("assignments.txt", encoding = 'utf-8')
@@ -470,7 +478,7 @@ f = open("assignments.txt", encoding = 'utf-8')
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
         if x[i,j] > 0.99:
-            print("" + str(i) + "\t" + StudentChoice[i,j])
+            print("" + str(i) + "\t" + StudentChoice[i,j].getValue())
     
 
 f.close()
