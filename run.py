@@ -218,8 +218,6 @@ for k in SEMINARS:
     # Set seminar lower bound capacity
     if k != 30: 
         model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
-model.write('capacity.lp')    
-  
 
 
 rank_val = 0
@@ -348,49 +346,48 @@ print("")
 print("================================================")
 
 for i in STUDENTS:
-    if x[i,1] <= 1:
-        if x[i,1] >= 1:
-            numFirstChoice+=1
+    if x[i,1].X== 1:
+        numFirstChoice+=1
     
-    if x[i,2] == 1:
+    if x[i,2].X == 1:
         numSecondChoice +=1
     
-    if x[i,3] == 1:
+    if x[i,3].X == 1:
         numThirdChoice += 1
     
-    if x[i,4] == 1:
+    if x[i,4].X == 1:
         numFourthChoice += 1
     
-    if x[i,5] == 1:
+    if x[i,5].X == 1:
         numFifthChoice += 1
     
-    if x[i,6] == 1:
+    if x[i,6].X == 1:
         numSixthChoice += 1
 
 for k in SEMINARS:
-    if FSEM[k].getValue() + MSEM[k].getValue() >= 15.5:
+    if FSEM[k].X + MSEM[k].X >= 15.5:
         num16 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 14.5:
+    elif FSEM[k].X + MSEM[k].X >= 14.5:
         num15 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 13.5:
+    elif FSEM[k].X + MSEM[k].X >= 13.5:
         num14 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 12.5:
+    elif FSEM[k].X + MSEM[k].X >= 12.5:
         num13 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 11.5:
+    elif FSEM[k].X + MSEM[k].X >= 11.5:
         num12 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 10.5:
+    elif FSEM[k].X + MSEM[k].X >= 10.5:
         num11 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 9.5:
+    elif FSEM[k].X + MSEM[k].X >= 9.5:
         num10 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 8.5:
+    elif FSEM[k].X + MSEM[k].X >= 8.5:
         num9 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 7.5:
+    elif FSEM[k].X + MSEM[k].X >= 7.5:
         num8 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 6.5:
+    elif FSEM[k].X + MSEM[k].X >= 6.5:
         num7 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 5.5:
+    elif FSEM[k].X + MSEM[k].X >= 5.5:
         num6 += 1
-    elif FSEM[k].getValue() + MSEM[k].getValue() >= 4.5:
+    elif FSEM[k].X + MSEM[k].X >= 4.5:
         num5 += 1
 
 print("" + str(numFirstChoice) + " (" + str(numFirstChoice/len(STUDENTS)*100) + "%) students were assigned their first-choice.")
@@ -468,17 +465,16 @@ print("================================================")
 
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(FSEM[k].getValue() + MSEM[k].getValue()) + 
-        " students with " + str(MSEM[k].getVAlue()) + " males and " + str(FSEM[k].getValue()) + " females; " +
-        str(US_SEM[k].getValue()) + " US and " + str(NonUS_SEM[k].getValue()) + " non-US; ")
+    print("Seminar " + str(k) + " has " + str(FSEM[k].X + MSEM[k].X) + 
+        " students with " + str(MSEM[k].X) + " males and " + str(FSEM[k].X) + " females; " +
+        str(US_SEM[k].X) + " US and " + str(NonUS_SEM[k].X) + " non-US; ")
 
-# Output actually assignment
-f = open("assignments.txt", encoding = 'utf-8')
+f = open("fysAssignment.txt", "w")
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
-        if x[i,j] > 0.99:
-            print("" + str(i) + "\t" + StudentChoice[i,j].getValue())
+        if x[i,j].X > 0.99:
+            f.write("" + str(i) + "\t" + str(StudentChoice[i,j]))
     
 
 f.close()
