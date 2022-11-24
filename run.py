@@ -450,8 +450,8 @@ for i in STUDENTS:
         utopian_rank += rank_weights[j]*x[i,j].X
 
 for j in SEMINARS:
-    utopian_gender += (MSEM[k].X - FSEM[k].X)* (MSEM[k].X - FSEM[k].X)
-    utopian_citizen += (US_SEM[k].X - NonUS_SEM[k].X) * (US_SEM[k].X - NonUS_SEM[k].X)
+    utopian_gender += (MSEM[j].X - FSEM[j].X)* (MSEM[j].X - FSEM[j].X)
+    utopian_citizen += (US_SEM[j].X - NonUS_SEM[j].X) * (US_SEM[j].X - NonUS_SEM[j].X)
 
 print("Rank Utopia is: " + str(zU_Rank))
 print("Gender Utopia is: " + str(zU_Gender))
@@ -475,7 +475,7 @@ f = open("fysAssignment.txt", "w")
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
         if x[i,j].X > 0.99:
-            f.write("" + str(i) + "\t" + str(StudentChoice[i,j]))
+            f.write("" + str(i) + "\t" + str(StudentChoice[i,j]) + "\n")
     
 
 f.close()
