@@ -46,10 +46,13 @@ This is an independent research conducted by John Chu and supervised by Professo
     - stu_id: Student id that uniquely identifies each student in Dickinson.
     - rank: rank values (1-6). Each student can prioritize 6 courses in one's order.
     - seminar: a seminar course that the student selected.
+  - course_num
+    - seminar_no: seminar course number
     
-    
-    
-    
+  ## Program Functionality
+  
+  - run.py: rum.py assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities.
+  - parse.py: parse.py automates to generate the DickinsonFirstYearSeminar.xlsx file based on the data pieces given from the college.
     
   ## Future Improvements
 
