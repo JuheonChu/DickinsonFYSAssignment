@@ -15,6 +15,7 @@ This is an independent research conducted by John Chu and supervised by Professo
 ## PreRequisite
  - Python
  - PyCharm/spyder/Python Idle
+ - Gurobi solver
 
 ## Set Up
 
