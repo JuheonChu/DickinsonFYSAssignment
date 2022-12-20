@@ -3,7 +3,7 @@
 ## Abstract
 This is an independent research conducted by John Chu and supervised by Professor D.Forrester in Dickinson College. In this research, we target to minimize the cost for assigning 660+ Dickinson freshmen into ~42 first year seminar courses while balancing gender and student type ratios and maintaining coure capacities.
 
-## Research Main Contents
+## Research Materials
 
 - Assignment Problem (Operations Research)
 - Hungarain Method
@@ -56,6 +56,8 @@ This is an independent research conducted by John Chu and supervised by Professo
   - parse.py: parse.py automates to generate the DickinsonFirstYearSeminar.xlsx file based on the data pieces given from the college.
     
   ## Future Improvements
-
+ 
+  - Handle an exceptional case of students who ask for extraordinary requests in the *run.py*
+  - Develop an algorithm that runs the program more in timely efficient manneer. Specifically, I would try implementing this program with Genetic Algorithms if times are allowed.
 
 
