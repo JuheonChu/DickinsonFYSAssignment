@@ -59,5 +59,6 @@ This is an independent research conducted by John Chu and supervised by Professo
  
   - Handle an exceptional case of students who ask for extraordinary requests in the *run.py*
   - Develop an algorithm that runs the program more in timely efficient manneer. Specifically, I would try implementing this program with Genetic Algorithms if times are allowed.
+  - Compute the exact Nadir points used to compute the utopian points for gender, rank, and citizenship.
 
 
