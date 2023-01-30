@@ -27,6 +27,8 @@ This is an independent research conducted by John Chu and supervised by Professo
 
 ![environment setting](https://user-images.githubusercontent.com/35699839/201580110-9a733a25-05d4-4240-a7f1-f336c2e76b5a.png)
 
+### Install xlsxwriter
+- This is required to successfully automate the given information from Dickinson College to load it into run.py.
 
 ## Dataset
 
