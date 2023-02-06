@@ -389,16 +389,18 @@ model.setParam('TimeLimit', 600)
 
 rank_objective = 0
 
-
+# Normalize the objective functions using the nadir and utopian points
+#rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
 rank_objective = rank_val / -zU_Rank 
 
 gender_objective = 0
 
-
+#gender_objective = (gender penalty - zU_Gender) / (zN_Gender - zU_Gender)
 gender_objective = gender_penalty / zU_Gender
 
 citizenship_objective = 0
 
+#citizenship_objective = (citizenship_penalty - zU_Citizen) / (zN_Citizen - zU_Citizen)
 citizenship_objective = citizenship_penalty / zU_Citizen
 
 obj_function = (obj_coef[1] * rank_objective) + (obj_coef[2] * gender_objective) + (obj_coef[3]*citizenship_objective) 
