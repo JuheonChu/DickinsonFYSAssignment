@@ -10,6 +10,7 @@ from gurobipy import Model
 from gurobipy import GRB
 from gurobipy import LinExpr
 import pandas as pd
+import numpy as np
 import time
 import gurobipy as gp
 
@@ -17,12 +18,12 @@ model = Model('Student Assignment Problem')
 
 
 # Loading in the excel file
-student_choices_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name='seminar')
-citizenship_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'citizenship')
-gender_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'gender')
-obj_coef_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'obj_coef')
-rank_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'rank_weights')
-course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'course_num')
+student_choices_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name='seminar',engine='openpyxl')
+citizenship_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'citizenship',engine='openpyxl')
+gender_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'gender',engine='openpyxl')
+obj_coef_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'obj_coef',engine='openpyxl')
+rank_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'rank_weights',engine='openpyxl')
+course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'course_num',engine='openpyxl')
 
 
 
@@ -157,6 +158,32 @@ for k in SEMINARS:
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
 
+# The following variables are used to store the Utopia Points
+#   which we will use to compute the Nadir points
+#############################################################
+## Variables for the Gender Utopia Point
+MSEM_G_Star = dict()
+FSEM_G_Star = dict()
+US_SEM_G_Star = dict()
+NonUS_SEM_G_Star = dict()
+x_G_Star = dict()
+
+## Variables for the Citizenship Utopia Point
+MSEM_C_Star = dict()
+FSEM_C_Star = dict()
+US_SEM_C_Star = dict()
+NonUS_SEM_C_Star = dict()
+x_C_Star = dict()
+
+## Variables for the Rank Utopia Point
+MSEM_R_Star = dict()
+FSEM_R_Star = dict()
+US_SEM_R_Star = dict()
+NonUS_SEM_R_Star = dict()
+x_R_Star = dict()
+
+
+
 
 
 
@@ -212,49 +239,148 @@ for k in SEMINARS:
         model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
 
 
+# Find Utopia Point for Rank
+############################
 rank_val = 0
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
         rank_val += rank_weights[j]*x[i,j]
 
-
 model.setObjective(rank_val, GRB.MINIMIZE)
 
-
 model.setParam('TimeLimit', 120)
-
-
-# Optimize  
 
 model.optimize()
 
 zU_Rank = model.getObjective().getValue()
 
+# Record the Utopia Point for Rank
+for k in SEMINARS:
+	MSEM_R_Star[k] = MSEM[k].X
+	FSEM_R_Star[k] = FSEM[k].X
+	US_SEM_R_Star[k] = US_SEM[k].X
+	NonUS_SEM_R_Star[k] = NonUS_SEM[k].X
+
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]:
+        x_R_Star[i,j] = x[i,j].X
+		
+# Find Utopia Point for Gender
+############################
+
 gender_penalty = 0
 for j in SEMINARS:
     gender_penalty += (MSEM[j] - FSEM[j])*(MSEM[j] - FSEM[j])
 
-
 model.setObjective(gender_penalty, GRB.MINIMIZE)
-
-
 
 model.optimize()
 
 zU_Gender = model.getObjective().getValue()
 
+# Record the Utopia Point for Gender
+for k in SEMINARS:
+	MSEM_G_Star[k] = MSEM[k].X
+	FSEM_G_Star[k] = FSEM[k].X
+	US_SEM_G_Star[k] = US_SEM[k].X
+	NonUS_SEM_G_Star[k] = NonUS_SEM[k].X
+	
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]:
+        x_G_Star[i,j] = x[i,j].X
 
+# Find Utopia Point for Citizenship
+###################################
 
 citizenship_penalty = 0
 for j in SEMINARS:
     citizenship_penalty += (US_SEM[j]-NonUS_SEM[j])*(US_SEM[j]-NonUS_SEM[j])
-
 
 model.setObjective(citizenship_penalty, GRB.MINIMIZE)
 
 model.optimize()
 
 zU_Citizen = model.getObjective().getValue()
+
+# Record the Utopia Point for Citizenship
+for k in SEMINARS:
+	MSEM_C_Star[k] = MSEM[k].X
+	FSEM_C_Star[k] = FSEM[k].X
+	US_SEM_C_Star[k] = US_SEM[k].X
+	NonUS_SEM_C_Star[k] = NonUS_SEM[k].X
+
+for i in STUDENTS:
+    for j in [1,2,3,4,5,6]:
+        x_C_Star[i,j] = x[i,j].X
+
+## Find Nadir Point for Rank
+############################
+f1 = 0
+f2 = 0
+f3 = 0
+for i in STUDENTS:
+	for j in [1,2,3,4,5,6]:
+		f1 += rank_weights[j]*x_R_Star[i,j]
+		f2 += rank_weights[j]*x_G_Star[i,j]
+		f3 += rank_weights[j]*x_C_Star[i,j]			
+
+zN_Rank = max(f1, f2, f3)
+
+# Used for testing
+#print("zU_Rank = " + str(float(zU_Rank)))
+#print("f1 = " + str(f1))
+#print("f2 = " + str(f2))
+#print("f3 = " + str(f3))
+#print("Rank Nadir = " + str(zN_Rank))
+#print("===============")
+#exit(0)
+
+## Find Nadir Point for Gender
+##############################
+f1 = 0
+f2 = 0
+f3 = 0
+for j in SEMINARS:
+	f1 += (MSEM_R_Star[j] - FSEM_R_Star[j])*(MSEM_R_Star[j] - FSEM_R_Star[j])
+	f2 += (MSEM_G_Star[j] - FSEM_G_Star[j])*(MSEM_G_Star[j] - FSEM_G_Star[j])
+	f3 += (MSEM_C_Star[j] - FSEM_C_Star[j])*(MSEM_C_Star[j] - FSEM_C_Star[j])	
+
+zN_Gender = max(f1, f2, f3)
+
+# Used for testing
+#print("zU_Gender = " + str(float(zU_Gender)))
+#print("f1 = " + str(f1))
+#print("f2 = " + str(f2))
+#print("f3 = " + str(f3))
+#print("Gender Nadir = " + str(zN_Gender))
+#print("===============")
+#exit(0)
+
+## Find Nadir Point for Citizenship
+###################################
+f1 = 0
+f2 = 0
+f3 = 0
+for j in SEMINARS:
+	f1 += (US_SEM_R_Star[j]-NonUS_SEM_R_Star[j])*(US_SEM_R_Star[j]-NonUS_SEM_R_Star[j])
+	f2 += (US_SEM_G_Star[j]-NonUS_SEM_G_Star[j])*(US_SEM_G_Star[j]-NonUS_SEM_G_Star[j])
+	f3 += (US_SEM_C_Star[j]-NonUS_SEM_C_Star[j])*(US_SEM_C_Star[j]-NonUS_SEM_C_Star[j])	
+	
+zN_Citizen = max(f1, f2, f3)
+
+# Used for testing
+#print("zU_Gender = " + str(float(zU_Citizen)))
+#print("f1 = " + str(f1))
+#print("f2 = " + str(f2))
+#print("f3 = " + str(f3))
+#print("Gender Nadir = " + str(zN_Citizen))
+#print("===============")
+#exit(0)
+		
+		
+## Solve the multiobjective assignment problem
+##############################################
+
 
 # Set the maximum solve time for complete model (in seconds)
 model.setParam('TimeLimit', 600)
