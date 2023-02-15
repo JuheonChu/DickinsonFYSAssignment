@@ -62,6 +62,10 @@ FSEM = dict()
 US_SEM = dict()
 NonUS_SEM = dict()
 
+## Variables for the Linearizing Gender and Citizenships objectives
+w_gender = dict()
+w_citizenship = dict()
+
 # Utopian points
 zU_Rank = 0
 zU_Gender = 0
@@ -154,7 +158,9 @@ for k in SEMINARS:
     MSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
     US_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
     NonUS_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
-    
+    # w should be here for both genders and citizenships (lb = -infinity, and ub = infinity)
+    w_gender[k] = model.addVar(-float('inf'), float('inf'), 1.0, GRB.CONTINUOUS, name='w_gender('+str(k)+')')
+    w_citizenship[k] = model.addVar(-float('inf'), float('inf'), 1.0, GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
 
@@ -181,6 +187,8 @@ FSEM_R_Star = dict()
 US_SEM_R_Star = dict()
 NonUS_SEM_R_Star = dict()
 x_R_Star = dict()
+
+
 
 
 
@@ -266,29 +274,13 @@ for i in STUDENTS:
 # Find Utopia Point for Gender
 ############################
 
-gender_penalty = 0
-
-# Array that 
-w = [0 for i in range(len(SEMINARS))]
-index = 0
-sum_gender = 0
-
-
 for k in SEMINARS:
+    model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
+    model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
     
-    w[index] = MSEM[k] - FSEM[k]
-    
-    #tot_students = MSEM[k] + FSEM[k]
-    
-    model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='w('+str(k)+')')
-    model.addConstr(w[index] >= MSEM[k] - FSEM[k])
-    model.addConstr(w[index] <= FSEM[k] - MSEM[k])
-    model.addConstr(MSEM[k] >= 0)
-    model.addConstr(FSEM[k] >= 0)
 
-    index+=1 
     
-model.setObjective(sum(w), GRB.MINIMIZE)
+model.setObjective(sum(w_gender.values()), GRB.MINIMIZE)
 model.optimize()
 
 #model.setObjective(sum(w), GRB.MINIMIZE)
@@ -310,11 +302,12 @@ for i in STUDENTS:
 # Find Utopia Point for Citizenship
 ###################################
 
-citizenship_penalty = 0
-for j in SEMINARS:
-    citizenship_penalty += (US_SEM[j]-NonUS_SEM[j])*(US_SEM[j]-NonUS_SEM[j])
 
-model.setObjective(citizenship_penalty, GRB.MINIMIZE)
+for j in SEMINARS:
+    model.addConstr(w_citizenship[k] >= MSEM[k] - FSEM[k])
+    model.addConstr(w_citizenship[k] >= FSEM[k] - MSEM[k])
+
+model.setObjective(sum(w_citizenship.values()), GRB.MINIMIZE)
 
 model.optimize()
 
@@ -414,13 +407,13 @@ rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
 gender_objective = 0
 
 # Normalize gender objective function
-gender_objective = (gender_penalty - zU_Gender) / (zN_Gender - zU_Gender)
+gender_objective = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
 #gender_objective = gender_penalty / zU_Gender
 
 citizenship_objective = 0
 
 # Normalize ctizienship objective function
-citizenship_objective = (citizenship_penalty - zU_Citizen) / (zN_Citizen - zU_Citizen)
+citizenship_objective = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen)
 #citizenship_objective = citizenship_penalty / zU_Citizen
 
 obj_function = (obj_coef[1] * rank_objective) + (obj_coef[2] * gender_objective) + (obj_coef[3]*citizenship_objective) 
