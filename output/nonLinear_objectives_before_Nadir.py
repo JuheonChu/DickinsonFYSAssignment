@@ -26,9 +26,6 @@ course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'cou
 
 
 
-# Time Checking
-
-
 # initalizing student lists
 STUDENTS = gender_df['stu_id'].tolist()
 
