@@ -7,11 +7,9 @@ Created on Mon Jun 20 01:46:08 2022
 
 from gurobipy import Model
 from gurobipy import GRB
-from gurobipy import LinExpr
+
 import pandas as pd
-import numpy as np
-import time
-import gurobipy as gp
+
 
 model = Model('Student Assignment Problem')
 
@@ -23,6 +21,7 @@ gender_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'gen
 obj_coef_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'obj_coef',engine='openpyxl')
 rank_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'rank_weights',engine='openpyxl')
 course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'course_num',engine='openpyxl')
+
 
 
 
@@ -146,12 +145,11 @@ for i in range(len(STUDENTS)):
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
 for k in SEMINARS:
-    FSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
-    MSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
-    US_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
-    NonUS_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
+    FSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='FSEM('+str(k)+')')
+    MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
+    US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
+    NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
     
-#FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
 
 # The following variables are used to store the Utopia Points
@@ -322,14 +320,6 @@ for i in STUDENTS:
 
 zN_Rank = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Rank = " + str(float(zU_Rank)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Rank Nadir = " + str(zN_Rank))
-#print("===============")
-#exit(0)
 
 ## Find Nadir Point for Gender
 ##############################
@@ -343,14 +333,6 @@ for j in SEMINARS:
 
 zN_Gender = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Gender = " + str(float(zU_Gender)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Gender Nadir = " + str(zN_Gender))
-#print("===============")
-#exit(0)
 
 ## Find Nadir Point for Citizenship
 ###################################
@@ -364,14 +346,7 @@ for j in SEMINARS:
 	
 zN_Citizen = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Gender = " + str(float(zU_Citizen)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Gender Nadir = " + str(zN_Citizen))
-#print("===============")
-#exit(0)
+
 		
 		
 ## Solve the multiobjective assignment problem
@@ -386,13 +361,12 @@ model.setParam('TimeLimit', 600)
 rank_objective = 0
 
 # Normalize the objective functions using the nadir and utopian points
-#rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
-rank_objective = rank_val / -zU_Rank 
+rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
 
 gender_objective = 0
 
-#gender_objective = (gender penalty - zU_Gender) / (zN_Gender - zU_Gender)
-gender_objective = gender_penalty / zU_Gender
+gender_objective = (gender_penalty - zU_Gender) / (zN_Gender - zU_Gender)
+
 
 citizenship_objective = 0
 
@@ -579,24 +553,24 @@ for j in SEMINARS:
     utopian_gender += (MSEM[j].X - FSEM[j].X)* (MSEM[j].X - FSEM[j].X)
     utopian_citizen += (US_SEM[j].X - NonUS_SEM[j].X) * (US_SEM[j].X - NonUS_SEM[j].X)
 
-print("Rank Utopia is: " + str(zU_Rank))
-print("Gender Utopia is: " + str(zU_Gender))
-print("Citizen Utopia is: " + str(zU_Citizen))
-print("Ethnic Utopia is: " + str(zU_Citizen))
+print("Rank Utopia is: " + str(int(zU_Rank)))
+print("Gender Utopia is: " + str(int(zU_Gender)))
+print("Citizen Utopia is: " + str(int(zU_Citizen)))
+print("Ethnic Utopia is: " + str(int(zU_Citizen)))
 print("")
-print("Rank Value is: " + str(utopian_rank))
-print("Gender Penalty is: " + str(utopian_gender))
-print("Citizenship Penalty is: " + str(utopian_citizen))
+print("Rank Value is: " + str(int(utopian_rank)))
+print("Gender Penalty is: " + str(int(utopian_gender)))
+print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(FSEM[k].X + MSEM[k].X) + 
-        " students with " + str(MSEM[k].X) + " males and " + str(FSEM[k].X) + " females; " +
-        str(US_SEM[k].X) + " US and " + str(NonUS_SEM[k].X) + " non-US; ")
+    print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
+        " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
+        str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
 
-f = open("fysAssignment.txt", "w")
+f = open("fysAssignmentLinear.txt", "w")
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
