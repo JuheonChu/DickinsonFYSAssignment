@@ -8,7 +8,6 @@ Created on Mon Jun 20 01:46:08 2022
 
 from gurobipy import Model
 from gurobipy import GRB
-#from gurobipy import LinExpr
 import pandas as pd
 
 
@@ -25,10 +24,6 @@ gender_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'gen
 obj_coef_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'obj_coef',engine='openpyxl')
 rank_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'rank_weights',engine='openpyxl')
 course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'course_num',engine='openpyxl')
-
-
-
-# Time Checking
 
 
 # initalizing student lists
@@ -141,10 +136,6 @@ for i in range(len(students)):
     StudentChoice[(students[i], SEMINAR_PICK[i])] = seminar_courses[i]
 
 
-
-
-
-
 # Create binary variables in x dictionary
 for i in range(len(STUDENTS)):
     for j in range(len([1,2,3,4,5,6])):
@@ -166,7 +157,7 @@ for k in SEMINARS:
 
 
 # The following variables are used to store the Utopia Points
-#   which we will use to compute the Nadir points
+# which we will use to compute the Nadir points
 #############################################################
 ## Variables for the Gender Utopia Point
 MSEM_G_Star = dict()
@@ -224,11 +215,11 @@ for k in SEMINARS:
                    
                 else:
                    exprFemale += x[i,j]
-    		    # US = 1, international = 0
+    		# US citizen = 1, international students = 0    
                 if citizenship[i] == 1:
-                    #exprUS += 1
+                    
                     exprUS += x[i,j]
-                    #US_SEM[k] += 1
+                    
                 else:
                     exprNonUS += x[i,j]
 			
@@ -284,8 +275,6 @@ for k in SEMINARS:
 model.setObjective(sum(w_gender.values()), GRB.MINIMIZE)
 model.optimize()
 
-#model.setObjective(sum(w), GRB.MINIMIZE)
-#model.optimize()
 
 zU_Gender = model.getObjective().getValue()
 
@@ -338,14 +327,6 @@ for i in STUDENTS:
 
 zN_Rank = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Rank = " + str(float(zU_Rank)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Rank Nadir = " + str(zN_Rank))
-#print("===============")
-#exit(0)
 
 ## Find Nadir Point for Gender
 ##############################
@@ -359,14 +340,7 @@ for j in SEMINARS:
 
 zN_Gender = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Gender = " + str(float(zU_Gender)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Gender Nadir = " + str(zN_Gender))
-#print("===============")
-#exit(0)
+
 
 ## Find Nadir Point for Citizenship
 ###################################
@@ -380,14 +354,6 @@ for j in SEMINARS:
 	
 zN_Citizen = max(f1, f2, f3)
 
-# Used for testing
-#print("zU_Gender = " + str(float(zU_Citizen)))
-#print("f1 = " + str(f1))
-#print("f2 = " + str(f2))
-#print("f3 = " + str(f3))
-#print("Gender Nadir = " + str(zN_Citizen))
-#print("===============")
-#exit(0)
 		
 		
 ## Solve the multiobjective assignment problem
@@ -403,19 +369,16 @@ rank_objective = 0
 
 # Normalize the rank objective function 
 rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
-#rank_objective = rank_val / -zU_Rank 
 
 gender_objective = 0
 
 # Normalize gender objective function
 gender_objective = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
-#gender_objective = gender_penalty / zU_Gender
 
 citizenship_objective = 0
 
 # Normalize ctizienship objective function
 citizenship_objective = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen)
-#citizenship_objective = citizenship_penalty / zU_Citizen
 
 obj_function = (obj_coef[1] * rank_objective) + (obj_coef[2] * gender_objective) + (obj_coef[3]*citizenship_objective) 
 
