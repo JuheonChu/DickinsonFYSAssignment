@@ -1,9 +1,13 @@
 # Dickinson College First Year Seminar Student Assignment
 
 ## Abstract
-This is an independent research conducted by John Chu and supervised by Professor D.Forrester in Dickinson College. In this research, we target to minimize the cost for assigning 660+ Dickinson freshmen into ~42 first year seminar courses while balancing gender and student type ratios and maintaining coure capacities.
+This is an independent research conducted by John Chu and supervised by Professor D.Forrester in Dickinson College. 
 
 ## Acknowledgement
+Thanks to Dr.Forrester, Richard in Dickinson to guide me through this wonderful research project!
+
+## Objectives
+In this research, we target to minimize the cost for assigning 660+ Dickinson freshmen into ~42 first year seminar courses while balancing gender and student type ratios and maintaining coure capacities. We will implement this program in many different versions and compare which one shows the best performance. 
 
 
 ## Research Materials
