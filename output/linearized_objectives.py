@@ -8,10 +8,11 @@ Created on Mon Jun 20 01:46:08 2022
 
 from gurobipy import Model
 from gurobipy import GRB
-from gurobipy import LinExpr
+#from gurobipy import LinExpr
 import pandas as pd
-import numpy as np
-import time
+
+
+import math
 import gurobipy as gp
 
 model = Model('Student Assignment Problem')
@@ -154,13 +155,13 @@ for i in range(len(STUDENTS)):
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
 for k in SEMINARS:
-    FSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
-    MSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
-    US_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
-    NonUS_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
+    FSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='FSEM('+str(k)+')')
+    MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
+    US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
+    NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
     # w should be here for both genders and citizenships (lb = -infinity, and ub = infinity)
-    w_gender[k] = model.addVar(-float('inf'), float('inf'), 1.0, GRB.CONTINUOUS, name='w_gender('+str(k)+')')
-    w_citizenship[k] = model.addVar(-float('inf'), float('inf'), 1.0, GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
+    w_gender[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_gender('+str(k)+')')
+    w_citizenship[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
 
@@ -593,25 +594,25 @@ for i in STUDENTS:
         utopian_rank += rank_weights[j]*x[i,j].X
 
 for j in SEMINARS:
-    utopian_gender += (MSEM[j].X - FSEM[j].X)* (MSEM[j].X - FSEM[j].X)
-    utopian_citizen += (US_SEM[j].X - NonUS_SEM[j].X) * (US_SEM[j].X - NonUS_SEM[j].X)
+    utopian_gender += abs(MSEM[j].X - FSEM[j].X)
+    utopian_citizen += abs(US_SEM[j].X - NonUS_SEM[j].X) 
 
-print("Rank Utopia is: " + str(zU_Rank))
-print("Gender Utopia is: " + str(zU_Gender))
-print("Citizen Utopia is: " + str(zU_Citizen))
-print("Ethnic Utopia is: " + str(zU_Citizen))
+print("Rank Utopia is: " + str(int(zU_Rank)))
+print("Gender Utopia is: " + str(int(zU_Gender)))
+print("Citizen Utopia is: " + str(int(zU_Citizen)))
+print("Ethnic Utopia is: " + str(int(zU_Citizen)))
 print("")
-print("Rank Value is: " + str(utopian_rank))
-print("Gender Penalty is: " + str(utopian_gender))
-print("Citizenship Penalty is: " + str(utopian_citizen))
+print("Rank Value is: " + str(int(utopian_rank)))
+print("Gender Penalty is: " + str(int(utopian_gender)))
+print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(FSEM[k].X + MSEM[k].X) + 
-        " students with " + str(MSEM[k].X) + " males and " + str(FSEM[k].X) + " females; " +
-        str(US_SEM[k].X) + " US and " + str(NonUS_SEM[k].X) + " non-US; ")
+    print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
+        " students with " + str(round(MSEM[k].X)) + " males and " + str(round(FSEM[k].X)) + " females; " +
+        str(round(US_SEM[k].X)) + " US and " + str(round(NonUS_SEM[k].X)) + " non-US; ")
 
 f = open("fysAssignmentLinear.txt", "w")
 
