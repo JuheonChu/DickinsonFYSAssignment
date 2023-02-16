@@ -61,13 +61,11 @@ In this research, we want to generate an automated program that targets to minim
     
   ## Program Functionality
   
-  - run.py: rum.py assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities.
+  - run.py: rum.py assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities. Among many versions of running this program, run.py specifically describes the program that shows the best performance in timely and efficient manner.
   - parse.py: parse.py automates to generate the DickinsonFirstYearSeminar.xlsx file based on the data pieces given from the college.
     
   ## Future Improvements
+
  
-  - Handle an exceptional case of students who ask for extraordinary requests in the *run.py*
-  - Develop an algorithm that runs the program more in timely efficient manneer. Specifically, I would try implementing this program with Genetic Algorithms if times are allowed.
-  - Compute the exact Nadir points used to compute the utopian points for gender, rank, and citizenship.
 
 
