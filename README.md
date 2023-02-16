@@ -26,7 +26,7 @@ In this research, we want to generate an automated program that targets to minim
 
 ## Set Up
 
-### Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
+### 1. Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
 
 - Choose the right Operating System that fits into the local machine and download the Gurobi Solver
 - Issue the Gurobi License ID. 
@@ -34,7 +34,7 @@ In this research, we want to generate an automated program that targets to minim
 
 ![environment setting](https://user-images.githubusercontent.com/35699839/201580110-9a733a25-05d4-4240-a7f1-f336c2e76b5a.png)
 
-### Install xlsxwriter
+### 2. Install xlsxwriter
 - This is required to successfully automate the given information from Dickinson College to load it into run.py.
 
 ## Dataset
