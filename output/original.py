@@ -142,10 +142,10 @@ for i in range(len(STUDENTS)):
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
 for k in SEMINARS:
-    FSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='FSEM('+str(k)+')')
-    MSEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='MSEM('+str(k)+')')
-    US_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
-    NonUS_SEM[k] = model.addVar(0.0, float('inf'), 1.0, GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
+    FSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='FSEM('+str(k)+')')
+    MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
+    US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
+    NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
     
 #FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
 
