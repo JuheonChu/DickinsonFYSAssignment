@@ -4,7 +4,7 @@
 This is an independent research conducted by John Chu and supervised by Professor D.Forrester in Dickinson College. 
 
 ## Acknowledgement
-Thanks to Dr.Forrester, Richard in Dickinson to guide me through this wonderful research project!
+First and foremost, I want to convey my profound appreciation to Dr. Forrester, Richard from Dickinson College for his specialized knowledge in operations research (OR) and his clear direction and unwavering encouragement during this research.
 
 ## Objectives
 In this research, we want to generate an automated program that targets to minimize the cost for assigning 660+ Dickinson freshmen into ~42 first year seminar courses while balancing gender and student type ratios and maintaining coure capacities. We will implement this program using a variety of techniques and compare one another to select the best one to be operable for assigning incoming new Dickinson first-year students. 
