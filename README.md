@@ -14,11 +14,11 @@ In this research, we want to generate an automated program that targets to minim
 ## Research Materials
 
 - Assignment Problem (Operations Research)
-- Hungarain Method
+- Linear/Non-linear Programming
 - Integer Programming
 - Multi-objective convex quadratic functions
 - Normalization (Nadir Points, Pareto Utopian sets)
-- Python Gurobi solver
+- Linearize non-linear functions
 
 ## PreRequisite
  - Python
