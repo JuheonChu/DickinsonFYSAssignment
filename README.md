@@ -1,7 +1,8 @@
-# Dickinson College First Year Seminar Student Assignment
+# Automated Student Assignment Program (Dickinson First-year seminar assignment)
 
 ## Abstract
-This is an independent research conducted by John Chu and supervised by Professor D.Forrester in Dickinson College. 
+
+At Dickinson College, all first-year students are obliged to enroll in a first-year seminar. Before they start their studies, they have to choose six seminars from the available options. A manual process is currently used to assign students to seminars based on their preferences. However, this method is time-consuming and laborious. Hence, Dr. Forrester, Richard at Dickinson College developed a Mosel program that uses mathematical techniques to streamline the process of assigning first-year students to semianrs. This research aims to improve the performance of this program and compare each improved version to produce the best program that completes the goal of targeting to balancing gender and student-type ratios with the best performance.
 
 ## Acknowledgement
 First and foremost, I want to convey my profound appreciation to Dr. Forrester, Richard from Dickinson College for his specialized knowledge in operations research (OR) and his clear direction and unwavering encouragement during this research.
