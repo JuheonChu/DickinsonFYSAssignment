@@ -33,7 +33,8 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
 ## Dataset
 
   ### DickinsonFirstYearSeminar.xlsx excel spreadsheet
-  Once we parse the dataset provided by college via `parse.py` into a format that is loaded into our `run.py`, we have the following data structure that store student   information to   assign first-year students across seminars. 
+  When we parse the dataset provided by college via `parse.py`, this results in producing `DickinsonFirstYearSeminar.xlsx` file which is able to be 
+  loaded into our `run.py`. This file contains the following student information.
   - citizenship
     - student_id: Student id that uniquely identifies each student in Dickinson.
     - citizenship: 0 (internatinoal students) or 1 (U.S domestic students).
@@ -55,8 +56,8 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
     
   ## Program Functionality
   
-  - run.py: rum.py assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities. Among many versions of running this program, run.py specifically describes the program that shows the best performance in timely and efficient manner.
-  - parse.py: parse.py automates to generate the DickinsonFirstYearSeminar.xlsx file based on the data pieces given from the college.
+  - `run.py`: This assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities. Among many versions of running this program, run.py specifically describes the program that shows the best performance in timely and efficient manner.
+  - `parse.py`: This auto-generates the `DickinsonFirstYearSeminar.xlsx` file based on the data pieces given from the college.
     
 
  
