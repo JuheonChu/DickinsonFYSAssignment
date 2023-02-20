@@ -33,6 +33,7 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
 ## Dataset
 
   ### DickinsonFirstYearSeminar.xlsx excel spreadsheet
+  Once we parse the dataset provided by college via `parse.py` into a format that is loaded into our `run.py`, we have the following data structure that store student   information to   assign first-year students across seminars. 
   - citizenship
     - student_id: Student id that uniquely identifies each student in Dickinson.
     - citizenship: 0 (internatinoal students) or 1 (U.S domestic students).
