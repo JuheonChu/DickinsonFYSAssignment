@@ -1,1 +1,0 @@
-# Operations Research Concepts
