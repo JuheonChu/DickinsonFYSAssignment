@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun 20 01:46:08 2022
-
 @author: John Chu & Professor Dick Forrester
+
 """
 
 
@@ -10,9 +10,6 @@ from gurobipy import Model
 from gurobipy import GRB
 import pandas as pd
 
-
-import math
-import gurobipy as gp
 
 model = Model('Student Assignment Problem')
 
@@ -150,10 +147,10 @@ for k in SEMINARS:
     MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
     US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
     NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
-    # w should be here for both genders and citizenships (lb = -infinity, and ub = infinity)
+    # w_gender, w_citizenhship: gender and citizenship penalty variables
     w_gender[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_gender('+str(k)+')')
     w_citizenship[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
-#FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
+
 
 
 # The following variables are used to store the Utopia Points
@@ -192,8 +189,6 @@ for i in STUDENTS:
         val += x[i,j]
     model.addConstr(val == 1, 'AssignCost('+str(i) + ')') 
 
-
-                        
 
 
 for k in SEMINARS: 
@@ -334,11 +329,13 @@ f1 = 0
 f2 = 0
 f3 = 0
 for j in SEMINARS:
-	f1 += (MSEM_R_Star[j] - FSEM_R_Star[j])*(MSEM_R_Star[j] - FSEM_R_Star[j])
-	f2 += (MSEM_G_Star[j] - FSEM_G_Star[j])*(MSEM_G_Star[j] - FSEM_G_Star[j])
-	f3 += (MSEM_C_Star[j] - FSEM_C_Star[j])*(MSEM_C_Star[j] - FSEM_C_Star[j])	
+    f1 += abs(MSEM_R_Star[j] - FSEM_R_Star[j])
+    f2 += abs(MSEM_G_Star[j] - FSEM_G_Star[j])
+    f3 += abs(MSEM_C_Star[j] - FSEM_C_Star[j])
+    
 
 zN_Gender = max(f1, f2, f3)
+print(zN_Gender)
 
 
 
@@ -348,10 +345,10 @@ f1 = 0
 f2 = 0
 f3 = 0
 for j in SEMINARS:
-	f1 += (US_SEM_R_Star[j]-NonUS_SEM_R_Star[j])*(US_SEM_R_Star[j]-NonUS_SEM_R_Star[j])
-	f2 += (US_SEM_G_Star[j]-NonUS_SEM_G_Star[j])*(US_SEM_G_Star[j]-NonUS_SEM_G_Star[j])
-	f3 += (US_SEM_C_Star[j]-NonUS_SEM_C_Star[j])*(US_SEM_C_Star[j]-NonUS_SEM_C_Star[j])	
-	
+    f1 += abs(US_SEM_R_Star[j]-NonUS_SEM_R_Star[j])
+    f2 += abs(US_SEM_G_Star[j]-NonUS_SEM_G_Star[j])
+    f3 += abs(US_SEM_C_Star[j]-NonUS_SEM_C_Star[j]) 
+    
 zN_Citizen = max(f1, f2, f3)
 
 		
@@ -404,7 +401,6 @@ tot_NonUS = 0
 
 for k in SEMINARS:
     tot_female += FSEM[k].X
-    
     tot_male += MSEM[k].X
     tot_US += US_SEM[k].X
     tot_NonUS += NonUS_SEM[k].X
@@ -586,6 +582,3 @@ for i in STUDENTS:
     
 
 f.close()
-
-
-        
