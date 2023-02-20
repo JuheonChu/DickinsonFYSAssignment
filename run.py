@@ -2,7 +2,6 @@
 """
 Created on Mon Jun 20 01:46:08 2022
 @author: John Chu & Professor Dick Forrester
-
 """
 
 
@@ -10,9 +9,6 @@ from gurobipy import Model
 from gurobipy import GRB
 import pandas as pd
 
-
-import math
-import gurobipy as gp
 
 model = Model('Student Assignment Problem')
 
