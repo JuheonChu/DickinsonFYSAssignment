@@ -24,9 +24,6 @@ course_df = pd.read_excel('Dickinson First Year Seminar.xlsx', sheet_name = 'cou
 
 
 
-# Time Checking
-
-
 # initalizing student lists
 STUDENTS = gender_df['stu_id'].tolist()
 
@@ -146,10 +143,6 @@ for k in SEMINARS:
     MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
     US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
     NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
-    
-#FSEM = model.addVars(50,lb=0,vtype=GRB.CONTINUOUS)
-
-
 
 
 
