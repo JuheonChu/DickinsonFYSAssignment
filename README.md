@@ -9,7 +9,7 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
 - Linear/Non-linear Programming
 - Integer Programming
 - Multi-objective convex quadratic functions
-- Normalization (Nadir Points, Pareto Utopian sets)
+- Normalization (Nadir Points, utopian points)
 - Linearize non-linear functions
 
 ## PreRequisite
