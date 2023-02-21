@@ -229,7 +229,7 @@ zU_Rank = model.getObjective().getValue()
 
 # Record the Utopia Point for Rank
 for k in SEMINARS:
-    W_R_Star[k] = (abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X))
+    W_R_Star[k] = [abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X)]
 
 
 for i in STUDENTS:
@@ -254,7 +254,7 @@ zU_Gender = model.getObjective().getValue()
 
 # Record the Utopia Point for Gender
 for k in SEMINARS:
-	W_G_Star[k] = (abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X))
+	W_G_Star[k] = [abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X)]
 	
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
@@ -276,7 +276,7 @@ zU_Citizen = model.getObjective().getValue()
 
 # Record the Utopia Point for Citizenship
 for k in SEMINARS:
-	W_C_Star[k] = (abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X))
+	W_C_Star[k] = [abs(MSEM[k].X - FSEM[k].X),abs(US_SEM[k].X - NonUS_SEM[k].X)]
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
