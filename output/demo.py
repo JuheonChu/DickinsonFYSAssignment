@@ -96,7 +96,6 @@ num5 = 0
 
 # seminar.dat
 seminar_courses = student_choices_df['seminar']
-students = student_choices_df['stu_id']
 
 # citizenship.dat
 stu_citizen = citizenship_df['citizen']
@@ -131,7 +130,6 @@ x_R_Star = dict()
 
 
 idx = 0
-
 for i in range(len(STUDENTS)):
     citizenship[STUDENTS[i]] = stu_citizen[i]    
     gender[STUDENTS[i]] = stu_gender[i]
