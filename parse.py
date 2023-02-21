@@ -77,7 +77,7 @@ for i in range(0, len(citizen), 6):
 
 # sheet_name = "obj_coef" (column == var name)
 obj_coef_key = [1,2,3]
-obj_coef = [69, 20, 40]
+obj_coef = [1,4,1]
 
 # sheet_name = "rank_weights"
 rank_index = [1,2,3,4,5,6]
