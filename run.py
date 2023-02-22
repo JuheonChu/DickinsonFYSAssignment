@@ -8,6 +8,8 @@ Created on Mon Jun 20 01:46:08 2022
 from gurobipy import Model
 from gurobipy import GRB
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 model = Model('Student Assignment Problem')
@@ -545,3 +547,37 @@ for i in STUDENTS:
     
 
 f.close()
+
+
+##################################################################
+######################### Plot the result ########################
+
+x = np.arange(len(SEMINARS))
+y1 = []
+y2 = []
+y3 = []
+y4 = []
+
+for k in SEMINARS:
+    y1 = MSEM[k].X
+    y2 = FSEM[k].X
+    y3 = US_SEM[k].X
+    y4 = NonUS_SEM[k].X
+    
+width = 0.2
+
+
+fig, axs = plt.subplots()
+fig = plt.figure(figsize=(17, 6)) # Create matplotlib figure
+axs.set_title('Dickinson First-Year Seminar Assignment')
+
+# plot data in grouped manner of bar type
+plt.bar(x-0.3, y1, width, color='cyan')
+plt.bar(x-0.1, y2, width, color='orange')
+plt.bar(x+0.1, y3, width, color='green')
+plt.bar(x+0.3, y4, width, color='red')
+plt.xticks(x, SEMINARS)
+plt.xlabel("Seminars")
+plt.ylabel("Students")
+plt.legend(["Male", "Female", "US", "International"])
+plt.show()
