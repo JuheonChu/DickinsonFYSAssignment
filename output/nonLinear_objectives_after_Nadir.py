@@ -566,7 +566,7 @@ for k in SEMINARS:
         " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
         str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
 
-f = open("fysAssignmentLinear.txt", "w")
+f = open("fysAssignmentNonLinear.txt", "w")
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
