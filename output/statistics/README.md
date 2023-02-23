@@ -51,12 +51,17 @@ All students were assigned
 ================================================
 
 Rank Utopia is: -31417
+
 Gender Utopia is: 106
+
 Citizen Utopia is: -39999999999999980529186670379008
+
 Ethnic Utopia is: -39999999999999980529186670379008
 
 Rank Value is: -30642
+
 Gender Penalty is: 106
+
 Citizenship Penalty is: 376
 
 ================================================
@@ -143,4 +148,161 @@ Seminar 46 has 10 students with 5 males and 5 females; 10 US and 0 non-US;
 
 Seminar 47 has 15 students with 7 males and 8 females; 10 US and 5 non-US; 
 
+---
+
 ## Output 2 (Case: using nonlinear objectives)
+
+![NonLinear_stat](https://user-images.githubusercontent.com/35699839/220803853-f87ebce4-8698-41ab-a3b7-940941587871.png)
+
+The total number of first-year students: 558
+The total number of seminars: 41
+
+Number of female students: 332.0
+Number of male students: 226.0
+
+Number of US Citizens: 467.0
+Number of Non US Citizens: 91.0
+
+  Rank weight 1:  -70
+  Rank weight 2:  -60
+  Rank weight 3:  -30
+  Rank weight 4:  1
+  Rank weight 5:  100
+  Rank weight 6:  300
+
+  Objective Coefficient 1:  1
+  Objective Coefficient 2:  4
+  Objective Coefficient 3:  1
+
+================================================
+
+All students were assigned
+
+================================================
+
+262 (46.95340501792115%) students were assigned their first-choice.
+
+157 (28.136200716845877%) students were assigned their second-choice.
+
+73 (13.082437275985665%) students were assigned their third-choice.
+
+43 (7.706093189964158%) students were assigned their fourth-choice.
+
+11 (1.971326164874552%) students were assigned their fifth-choice.
+
+12 (2.1505376344086025%) students were assigned their sixth-choice.
+
+================================================
+
+20  seminars have 15 students
+
+11 seminars have 14 students
+
+3 seminars have 12 students
+
+2 seminars have 11 students
+
+4 seminars have 10 students
+
+1 seminars have 6 students
+
+================================================
+
+Rank Utopia is: -31417
+
+Gender Utopia is: 296
+
+Citizen Utopia is: 3466
+
+Ethnic Utopia is: 3466
+
+Rank Value is: -25207
+
+Gender Penalty is: 302
+
+Citizenship Penalty is: 3478
+
+================================================
+
+Seminar 1 has 15 students with 7 males and 8 females; 12 US and 3 non-US; 
+
+Seminar 2 has 15 students with 6 males and 9 females; 12 US and 3 non-US;
+
+Seminar 3 has 14 students with 6 males and 8 females; 12 US and 2 non-US;
+
+Seminar 4 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 5 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 6 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 9 has 15 students with 6 males and 9 females; 12 US and 3 non-US;
+
+Seminar 10 has 14 students with 6 males and 8 females; 12 US and 2 non-US; 
+
+Seminar 11 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 12 has 14 students with 6 males and 8 females; 12 US and 2 non-US;
+
+Seminar 13 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 14 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 15 has 14 students with 6 males and 8 females; 11 US and 3 non-US; 
+
+Seminar 16 has 14 students with 6 males and 8 females; 11 US and 3 non-US; 
+
+Seminar 17 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 18 has 15 students with 6 males and 9 females; 12 US and 3 non-US;
+
+Seminar 19 has 14 students with 6 males and 8 females; 12 US and 2 non-US; 
+
+Seminar 20 has 10 students with 4 males and 6 females; 10 US and 0 non-US; 
+
+Seminar 21 has 11 students with 4 males and 7 females; 9 US and 2 non-US; 
+
+Seminar 22 has 14 students with 6 males and 8 females; 12 US and 2 non-US; 
+
+Seminar 23 has 10 students with 2 males and 8 females; 9 US and 1 non-US; 
+
+Seminar 24 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 25 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 26 has 14 students with 6 males and 8 females; 12 US and 2 non-US;
+
+Seminar 28 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 29 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 30 has 6 students with 1 males and 5 females; 6 US and 0 non-US; 
+
+Seminar 31 has 12 students with 5 males and 7 females; 11 US and 1 non-US; 
+
+Seminar 32 has 10 students with 4 males and 6 females; 10 US and 0 non-US;
+
+Seminar 33 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 34 has 12 students with 5 males and 7 females; 11 US and 1 non-US; 
+
+Seminar 35 has 14 students with 6 males and 8 females; 12 US and 2 non-US; 
+
+Seminar 36 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 37 has 14 students with 6 males and 8 females; 12 US and 2 non-US; 
+
+Seminar 39 has 12 students with 5 males and 7 females; 11 US and 1 non-US; 
+
+Seminar 41 has 15 students with 6 males and 9 females; 12 US and 3 non-US; 
+
+Seminar 42 has 15 students with 6 males and 9 females; 12 US and 3 non-US;
+
+Seminar 44 has 11 students with 4 males and 7 females; 10 US and 1 non-US; 
+
+Seminar 45 has 14 students with 6 males and 8 females; 12 US and 2 non-US;
+
+Seminar 46 has 10 students with 4 males and 6 females; 10 US and 0 non-US; 
+
+Seminar 47 has 15 students with 7 males and 8 females; 12 US and 3 non-US; 
+
