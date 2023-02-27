@@ -8,7 +8,7 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
 - Assignment Problem (Operations Research)
 - Linear/Non-linear Programming
 - Integer Programming
-- Multi-objective convex quadratic functions
+- Multi-objective convex quadratic functions (Hierarchial, Combining blended & Hierarchial)
 - Normalization (Nadir Points, utopian points)
 - Linearize non-linear functions
 
