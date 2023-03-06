@@ -1,4 +1,4 @@
-# Automated Student Assignment Program (Dickinson First-year seminar assignment)
+# A Linearized Approach to Improving Dickinson First-Year Seminar Assignment Program
 
 This is a student-faculty collaborative research with Professor Dick Forrester at Dickinson College to accomplish assigning Dickinson first-year students into their First-Year Seminar courses in timely and efficient manner.
 
