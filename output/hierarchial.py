@@ -162,12 +162,6 @@ for k in SEMINARS:
     w_citizenship[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
 
 
-# a_1 and a_2 variables for limiting allowing next objectives
-a1 = model.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a1")
-a2 = model.addVar(lb=-GRB.INFINITY, ub=GRB.INFINITY, vtype=GRB.CONTINUOUS, name="a2")
-
-
-
 
 # Add the constraint
 for i in STUDENTS:
@@ -356,20 +350,11 @@ obj_names = ["rank", "gender", "citizenship"]
 SetObjPriority = [1,2,3]
 
 # Set and configure i-th objective
-for i in range(3):
+for i in range(len(obj_functions)):
     objn = obj_functions[i]
     model.setObjectiveN(expr=objn, index=i, priority=SetObjPriority[i], weight=obj_coef[i+1], 
                         abstol=0, reltol = 0.05, name = obj_names[i])
 
-
-
-# Constraints for Hierarchial methods
-model.addConstr(rank_objective == a1)
-model.addConstr(gender_objective == a2)
-model.addConstr(rank_objective <= 1.05 * a1)
-model.addConstr(gender_objective <= 1.05 * a2)
-model.addConstr(rank_objective <= 1.05 * a1)
-model.addConstr(gender_objective <= 1.05 * a2)
 
 model.optimize()
 
@@ -552,14 +537,11 @@ print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
-gend_diff = 0
-citizenship_diff = 0
 for k in SEMINARS:
     print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
         " students with " + str(round(MSEM[k].X)) + " males and " + str(round(FSEM[k].X)) + " females; " +
         str(round(US_SEM[k].X)) + " US and " + str(round(NonUS_SEM[k].X)) + " non-US; ")
-    gend_diff += abs(MSEM[k].X - FSEM[k].X)
-    citizenship_diff += abs(US_SEM[k].X - NonUS_SEM[k].X)
+   
     
 
 f = open("fysAssignmentLinear.txt", "w")
