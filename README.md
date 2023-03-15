@@ -12,6 +12,12 @@ This is a student-faculty collaborative research with Professor Dick Forrester a
 - Normalization (Nadir Points, utopian points)
 - Linearize non-linear functions
 
+## Research Objectives
+
+- Linearize convex quadratic gender and citizenship objectives
+- Hierarchial multi-objectives
+- Blended multi-objectives
+
 ## PreRequisite
  - Python
  - PyCharm/spyder/Python Idle
