@@ -231,8 +231,6 @@ for i in STUDENTS:
 
 model.setObjective(rank_val, GRB.MINIMIZE)
 
-model.setParam('TimeLimit', 120)
-
 model.optimize()
 
 zU_Rank = model.getObjective().getValue()
@@ -322,9 +320,6 @@ zN_Citizen = max(f1, f2, f3)
 ## Solve the multiobjective assignment problem
 ##############################################
 
-
-# Set the maximum solve time for complete model (in seconds)
-model.setParam('TimeLimit', 600)
 
 # Optimize over the weighted (and scaled) objective function
 
