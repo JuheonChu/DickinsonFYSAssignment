@@ -218,8 +218,8 @@ for k in SEMINARS:
     model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
 
 for j in SEMINARS:
-    model.addConstr(w_citizenship[k] >= MSEM[k] - FSEM[k])
-    model.addConstr(w_citizenship[k] >= FSEM[k] - MSEM[k])
+    model.addConstr(w_citizenship[k] >= US_SEM[k] - NonUS_SEM[k])
+    model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
     
 
 # Find Utopia Point for Rank
