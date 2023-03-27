@@ -207,7 +207,7 @@ model.optimize()
 zU_Rank = model.getObjective().getValue()
 
 
-model.addConstr(f_rank >= 1.05 * zU_Rank, "Rank Priority")
+model.addConstr(f_rank <= 0.99 * zU_Rank, "Rank Priority")
 
 
 # Find Utopia Point for Gender
@@ -222,7 +222,7 @@ model.write('output.lp')
 
 zU_Gender = model.getObjective().getValue()
 
-model.addConstr(f_gender <= 1.05 * zU_Gender, "Gender Priority")
+model.addConstr(f_gender <= 1.01 * zU_Gender, "Gender Priority")
 
 f_citizenship = sum(w_citizenship.values())
 
