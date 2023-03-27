@@ -208,7 +208,7 @@ model.optimize()
 blended_optimal_val = model.getObjective().getValue()
 
 # Add Constraint to maintain optimal blended value
-model.addConstr(obj_coef[1]*f_rank + obj_coef[2]*f_gender <= blended_optimal_val, "d")
+model.addConstr(obj_coef[1]*f_rank + obj_coef[2]*f_gender <= blended_optimal_val, "Hierarchical degradation")
 
 model.setObjective(f_citizenship, GRB.MINIMIZE)
 model.optimize()
