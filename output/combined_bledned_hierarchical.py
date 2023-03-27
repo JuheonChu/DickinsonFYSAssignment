@@ -61,14 +61,12 @@ w_citizenship = dict()
 zU_Rank = 0
 zU_Gender = 0
 zU_Citizen = 0
-zU_Ethnicity = 0
 
 # array(SEMINARS) of real
 MSEMU_Rank = dict()
 FSEMU_Rank = dict()
 US_SEMU_Rank = dict()
 NonUS_SEMU_Rank = dict()
-
 
 # bookkeeping variables used to help keep track of statistics of optimal assignments
 numFirstChoice = 0
@@ -95,40 +93,13 @@ num5 = 0
 
 
 # Load in data
-
-# seminar.dat
 seminar_courses = student_choices_df['seminar']
-
-# citizenship.dat
 stu_citizen = citizenship_df['citizen']
-
-# gender.dat
 stu_gender = gender_df['gender']
-
-# obj_coef.dat (1: 69, 2: 20, 3: 40)
 obj_coef_key = obj_coef_df['obj_coef_key']
 obj_coef_val = obj_coef_df['obj_coef'] 
-
-# rank.dat 
 rank_idx =  rank_df['rank_index']
 rank_coef = rank_df['rank_weights']
-
-
-
-# The following variables are used to store the Utopia Points
-# which we will use to compute the Nadir points
-#############################################################
-## Variables for the Gender Utopia Point
-W_G_Star = dict()
-x_G_Star = dict()
-
-## Variables for the Citizenship Utopia Point
-W_C_Star = dict()
-x_C_Star = dict()
-
-## Variables for the Rank Utopia Point
-W_R_Star = dict()
-x_R_Star = dict()
 
 
 idx = 0
@@ -140,6 +111,7 @@ for i in range(len(STUDENTS)):
             x[STUDENTS[i],SEMINAR_PICK[j]] = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, 'x('+str(STUDENTS[i]) + ','+str([1,2,3,4,5,6][j]) +')')
             StudentChoice[STUDENTS[i], SEMINAR_PICK[j]] = seminar_courses[idx]
             idx+=1
+            
 
 # They are just 9 operations in-total
 for i in range(len(obj_coef_key)):
@@ -147,8 +119,6 @@ for i in range(len(obj_coef_key)):
 
 for j in range(len(rank_idx)):
     rank_weights[rank_idx[j]] = rank_coef[j]
-
-
 
 
 # Create the variables for number of males, females, US, and NonUS Students in course k
@@ -222,138 +192,26 @@ for j in SEMINARS:
     model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
     
 
-# Find Utopia Point for Rank
-############################
-rank_val = 0
+# Define objectives
+f_rank = 0
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]:
-        rank_val += rank_weights[j]*x[i,j]
+        f_rank += rank_weights[j]*x[i,j]
+f_gender = sum(w_gender.values())
+f_citizenship = sum(w_citizenship.values())
 
-model.setObjective(rank_val, GRB.MINIMIZE)
+model.setObjective(obj_coef[1]*f_rank + obj_coef[2]*f_gender, GRB.MINIMIZE)
 
+# Optimize
 model.optimize()
 
-zU_Rank = model.getObjective().getValue()
+blended_optimal_val = model.getObjective().getValue()
 
-# Record the Utopia Point for Rank
-for k in SEMINARS:
-    W_R_Star[k] = [w_gender[k].X, w_citizenship[k].X]
+# Add Constraint to maintain optimal blended value
+model.addConstr(obj_coef[1]*f_rank + obj_coef[2]*f_gender <= blended_optimal_val, "d")
 
-
-for i in STUDENTS:
-    for j in [1,2,3,4,5,6]:
-        x_R_Star[i,j] = x[i,j].X
-		
-# Find Utopia Point for Gender
-############################
-model.setObjective(sum(w_gender.values()), GRB.MINIMIZE)
+model.setObjective(f_citizenship, GRB.MINIMIZE)
 model.optimize()
-
-zU_Gender = model.getObjective().getValue()
-
-# Record the Utopia Point for Gender
-for k in SEMINARS:
-	W_G_Star[k] = [w_gender[k].X ,w_citizenship[k].X]
-	
-for i in STUDENTS:
-    for j in [1,2,3,4,5,6]:
-        x_G_Star[i,j] = x[i,j].X
-
-# Find Utopia Point for Citizenship
-###################################
-
-model.setObjective(sum(w_citizenship.values()), GRB.MINIMIZE)
-
-model.optimize()
-
-zU_Citizen = model.getObjective().getValue()
-
-
-# Record the Utopia Point for Citizenship
-for k in SEMINARS:
-	W_C_Star[k] = [w_gender[k].X, w_citizenship[k].X]
-
-for i in STUDENTS:
-    for j in [1,2,3,4,5,6]:
-        x_C_Star[i,j] = x[i,j].X
-
-## Find Nadir Point for Rank
-############################
-f1 = 0
-f2 = 0
-f3 = 0
-for i in STUDENTS:
-	for j in [1,2,3,4,5,6]:
-		f1 += rank_weights[j]*x_R_Star[i,j]
-		f2 += rank_weights[j]*x_G_Star[i,j]
-		f3 += rank_weights[j]*x_C_Star[i,j]			
-
-zN_Rank = max(f1, f2, f3)
-
-
-## Find Nadir Point for Gender
-##############################
-f1 = 0
-f2 = 0
-f3 = 0
-for j in SEMINARS:
-    f1 += W_R_Star[j][0]
-    f2 += W_G_Star[j][0]
-    f3 += W_C_Star[j][0]
-    
-zN_Gender = max(f1, f2, f3)
-
-## Find Nadir Point for Citizenship
-###################################
-f1 = 0
-f2 = 0
-f3 = 0
-for j in SEMINARS:
-    f1 += W_R_Star[j][1]
-    f2 += W_G_Star[j][1]
-    f3 += W_C_Star[j][1]
-    
-zN_Citizen = max(f1, f2, f3)
-
-		
-		
-## Solve the multiobjective assignment problem
-##############################################
-
-
-# Optimize over the weighted (and scaled) objective function
-
-rank_objective = 0
-
-# Normalize the rank objective function 
-rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
-
-gender_objective = 0
-
-# Normalize gender objective function
-gender_objective = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
-
-citizenship_objective = 0
-
-# Normalize ctizienship objective function
-citizenship_objective = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen)
-
-obj_functions= [rank_objective, gender_objective,  citizenship_objective]
-
-obj_names = ["rank", "gender", "citizenship"]
-
-SetObjPriority = [1,2,3]
-
-# Set and configure i-th objective
-for i in range(len(obj_functions)):
-    objn = obj_functions[i]
-    model.setObjectiveN(expr=objn, index=i, priority=SetObjPriority[i], weight=obj_coef[i+1], 
-                        abstol=0, reltol = 0.05, name = obj_names[i])
-
-
-model.optimize()
-
-
 # Print out the solution
 print("The total number of first-year students: " + str(len(STUDENTS)))
 print("The total number of seminars: " + str(len(SEMINARS)))
@@ -461,7 +319,7 @@ if num16 > 0:
   print("" + str(num16) + " seminars have 16 students")
 
 if num15 > 0:
-  print("", num15, " seminars have 15 students")
+  print("" + str(num15) + " seminars have 15 students")
 
 
 if num14 > 0:
