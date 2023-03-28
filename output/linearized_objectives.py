@@ -215,7 +215,7 @@ for k in SEMINARS:
     model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
     model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
 
-for j in SEMINARS:
+for k in SEMINARS:
     model.addConstr(w_citizenship[k] >= MSEM[k] - FSEM[k])
     model.addConstr(w_citizenship[k] >= FSEM[k] - MSEM[k])
     
