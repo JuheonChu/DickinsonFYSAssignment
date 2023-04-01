@@ -8,7 +8,8 @@ Created on Mon Jun 20 01:46:08 2022
 from gurobipy import Model
 from gurobipy import GRB
 import pandas as pd
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 model = Model('Student Assignment Problem')
 
@@ -346,8 +347,8 @@ optimal_value = model.getObjective().getValue()
 
 
 
-
 # Print out the solution
+
 print("The total number of first-year students: " + str(len(STUDENTS)))
 print("The total number of seminars: " + str(len(SEMINARS)))
 print("")
@@ -359,6 +360,7 @@ tot_NonUS = 0
 
 for k in SEMINARS:
     tot_female += FSEM[k].X
+    
     tot_male += MSEM[k].X
     tot_US += US_SEM[k].X
     tot_NonUS += NonUS_SEM[k].X
@@ -511,8 +513,8 @@ for i in STUDENTS:
         utopian_rank += rank_weights[j]*x[i,j].X
 
 for j in SEMINARS:
-    utopian_gender += abs(MSEM[j].X - FSEM[j].X)
-    utopian_citizen += abs(US_SEM[j].X - NonUS_SEM[j].X) 
+    utopian_gender += (MSEM[j].X - FSEM[j].X)* (MSEM[j].X - FSEM[j].X)
+    utopian_citizen += (US_SEM[j].X - NonUS_SEM[j].X) * (US_SEM[j].X - NonUS_SEM[j].X)
 
 print("Rank Utopia is: " + str(int(zU_Rank)))
 print("Gender Utopia is: " + str(int(zU_Gender)))
@@ -525,13 +527,40 @@ print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
+################ Compute Variance #########################
+gender_mean = 0.0
+stu_type_mean = 0.0
+gender_variance = [0.0 for i in range(len(SEMINARS))]
+stu_type_variance = [0.0 for i in range(len(SEMINARS))]
+i = 0
+for k in SEMINARS:
+    gender_imbalance = abs(int(FSEM[k].X) - int(MSEM[k].X)) / (int(FSEM[k].X) + int(MSEM[k].X))
+    stu_type_imbalance = abs(int(US_SEM[k].X) - int(NonUS_SEM[k].X)) / (int(US_SEM[k].X) + int(NonUS_SEM[k].X))
+    gender_mean += gender_imbalance
+    stu_type_mean += stu_type_imbalance 
+    gender_variance[i] = gender_imbalance
+    stu_type_variance[i] = stu_type_imbalance
+    print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
+        " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
+        str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
+    i+=1
+
+gender_mean /= len(SEMINARS)
+stu_type_mean /= len(SEMINARS)
+
+gender_res = 0.0
+stu_type_res = 0.0
+i = 0
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
-        " students with " + str(round(MSEM[k].X)) + " males and " + str(round(FSEM[k].X)) + " females; " +
-        str(round(US_SEM[k].X)) + " US and " + str(round(NonUS_SEM[k].X)) + " non-US; ")
+    gender_res += (gender_variance[i] - gender_mean) * (gender_variance[i] - gender_mean)
+    stu_type_res += (stu_type_variance[i]-stu_type_mean) * (stu_type_variance[i]-stu_type_mean)
+gender_res = (gender_res / len(SEMINARS)) * 100
+stu_type_res = (stu_type_res / len(SEMINARS)) * 100
 
-f = open("fysAssignmentLinear.txt", "w")
+print('Gender variance: ' + str(gender_res) + "%")
+print('Student-type variance: ' + str(stu_type_res) + "%")
+f = open("fysAssignmentNonLinear.txt", "w")
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
@@ -540,3 +569,39 @@ for i in STUDENTS:
     
 
 f.close()
+
+
+##################################################################
+######################### Plot the result ########################
+
+x = np.arange(len(SEMINARS))
+y1 = [0 for i in range(len(SEMINARS))]
+y2 = [0 for i in range(len(SEMINARS))]
+y3 = [0 for i in range(len(SEMINARS))]
+y4 = [0 for i in range(len(SEMINARS))]
+
+j = 0
+for k in SEMINARS:
+    y1[j] = MSEM[k].X
+    y2[j] = FSEM[k].X
+    y3[j] = US_SEM[k].X
+    y4[j] = NonUS_SEM[k].X
+    j+=1
+    
+width = 0.25
+
+
+fig, axs = plt.subplots()
+fig = plt.figure(figsize=(17, 6)) # Create matplotlib figure
+axs.set_title('Dickinson First-Year Seminar Assignment')
+
+# plot data in grouped manner of bar type
+plt.bar(x-0.3, y1, width, color='cyan')
+plt.bar(x-0.1, y2, width, color='orange')
+plt.bar(x+0.1, y3, width, color='green')
+plt.bar(x+0.3, y4, width, color='red')
+plt.xticks(x, SEMINARS)
+plt.xlabel("Seminars")
+plt.ylabel("Students")
+plt.legend(["Male", "Female", "US", "International"])
+plt.show()
