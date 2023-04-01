@@ -6,5 +6,6 @@ for k in SEMINARS:
 for k in SEMINARS:
     model.addConstr(w_citizenship[k] >= US_SEM[k] - NonUS_SEM[k])
     model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
+
 model.setObjective(sum(w_gender), GRB.MINIMIZE)
 model.optimize()
