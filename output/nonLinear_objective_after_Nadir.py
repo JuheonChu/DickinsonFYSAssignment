@@ -9,6 +9,8 @@ from gurobipy import Model
 from gurobipy import GRB
 
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 model = Model('Student Assignment Problem')
@@ -533,12 +535,39 @@ print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
-
+################ Compute Variance #########################
+gender_mean = 0.0
+stu_type_mean = 0.0
+gender_variance = [0.0 for i in range(len(SEMINARS))]
+stu_type_variance = [0.0 for i in range(len(SEMINARS))]
+i = 0
 for k in SEMINARS:
+    gender_imbalance = abs(int(FSEM[k].X) - int(MSEM[k].X)) / (int(FSEM[k].X) + int(MSEM[k].X))
+    stu_type_imbalance = abs(int(US_SEM[k].X) - int(NonUS_SEM[k].X)) / (int(US_SEM[k].X) + int(NonUS_SEM[k].X))
+    gender_mean += gender_imbalance
+    stu_type_mean += stu_type_imbalance 
+    gender_variance[i] = gender_imbalance
+    stu_type_variance[i] = stu_type_imbalance
     print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
         " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
         str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
+    i+=1
 
+gender_mean /= len(SEMINARS)
+stu_type_mean /= len(SEMINARS)
+
+gender_res = 0.0
+stu_type_res = 0.0
+i = 0
+
+for k in SEMINARS:
+    gender_res += (gender_variance[i] - gender_mean) * (gender_variance[i] - gender_mean)
+    stu_type_res += (stu_type_variance[i]-stu_type_mean) * (stu_type_variance[i]-stu_type_mean)
+gender_res = (gender_res / len(SEMINARS)) * 100
+stu_type_res = (stu_type_res / len(SEMINARS)) * 100
+
+print('Gender variance: ' + str(gender_res) + "%")
+print('Student-type variance: ' + str(stu_type_res) + "%")
 f = open("fysAssignmentNonLinear.txt", "w")
 
 for i in STUDENTS:
@@ -548,3 +577,39 @@ for i in STUDENTS:
     
 
 f.close()
+
+
+##################################################################
+######################### Plot the result ########################
+
+x = np.arange(len(SEMINARS))
+y1 = [0 for i in range(len(SEMINARS))]
+y2 = [0 for i in range(len(SEMINARS))]
+y3 = [0 for i in range(len(SEMINARS))]
+y4 = [0 for i in range(len(SEMINARS))]
+
+j = 0
+for k in SEMINARS:
+    y1[j] = MSEM[k].X
+    y2[j] = FSEM[k].X
+    y3[j] = US_SEM[k].X
+    y4[j] = NonUS_SEM[k].X
+    j+=1
+    
+width = 0.25
+
+
+fig, axs = plt.subplots()
+fig = plt.figure(figsize=(17, 6)) # Create matplotlib figure
+axs.set_title('Dickinson First-Year Seminar Assignment')
+
+# plot data in grouped manner of bar type
+plt.bar(x-0.3, y1, width, color='cyan')
+plt.bar(x-0.1, y2, width, color='orange')
+plt.bar(x+0.1, y3, width, color='green')
+plt.bar(x+0.3, y4, width, color='red')
+plt.xticks(x, SEMINARS)
+plt.xlabel("Seminars")
+plt.ylabel("Students")
+plt.legend(["Male", "Female", "US", "International"])
+plt.show()
