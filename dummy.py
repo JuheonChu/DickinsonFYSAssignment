@@ -1,10 +1,10 @@
-# Add constraints for the imbalances and largest gender imbalance
-for k in MSEM:
-    model.addConstr(imbalance_vars[k] >= MSEM[k] - FSEM[k], name=f"imbalance_constraint_1_{k}")
-    model.addConstr(imbalance_vars[k] >= FSEM[k] - MSEM[k], name=f"imbalance_constraint_2_{k}")
-    model.addConstr(largest_gender_imbalance >= imbalance_vars[k], name=f"largest_imbalance_constraint_{k}")    
-
-# Find Utopia Point for Gender
-model.setObjective(largest_gender_imbalance, GRB.MINIMIZE)
-
+# Set the constraints for each gender and student-type objectives
+# e.g. w_gender[1] = |MSEM[1] - FSEM[1]|
+for k in SEMINARS:
+    model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
+    model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
+for k in SEMINARS:
+    model.addConstr(w_citizenship[k] >= US_SEM[k] - NonUS_SEM[k])
+    model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
+model.setObjective(sum(w_gender), GRB.MINIMIZE)
 model.optimize()
