@@ -1,4 +1,4 @@
-# Set the constraints for each w_gender and w_citizenship 
+# Minimize the imbalances in gender and number of international students.
 for k in SEMINARS:
     model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
     model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
