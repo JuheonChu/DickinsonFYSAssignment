@@ -7,10 +7,12 @@ Created on Mon Jun 20 01:46:08 2022
 
 from gurobipy import Model
 from gurobipy import GRB
+from gurobipy import quicksum
+import gurobipy as gp
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
+import statistics
 
 model = Model('Student Assignment Problem')
 
@@ -149,18 +151,14 @@ for j in range(len(rank_idx)):
     rank_weights[rank_idx[j]] = rank_coef[j]
 
 
-
-
 # Create the variables for number of males, females, US, and NonUS Students in course k
 for k in SEMINARS:
     FSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='FSEM('+str(k)+')')
     MSEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='MSEM('+str(k)+')')
     US_SEM[k] = model.addVar(lb= 0.0, ub = float('inf'), vtype= GRB.CONTINUOUS, name='US_SEM('+str(k)+')')
     NonUS_SEM[k] = model.addVar(lb = 0.0, ub = float('inf'), vtype = GRB.CONTINUOUS, name='NonUS_SEM('+str(k)+')')
-    # w_gender, w_citizenhship: gender and citizenship penalty variables
     w_gender[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_gender('+str(k)+')')
     w_citizenship[k] = model.addVar(lb = -float('inf'), ub = float('inf'), vtype = GRB.CONTINUOUS, name='w_citizenship('+str(k)+')')
-
 
 
 # Add the constraint
@@ -212,15 +210,20 @@ for k in SEMINARS:
     if k != 30: 
         model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
 
+
+
 # Set the constraints for each w_gender and w_citizenship 
 for k in SEMINARS:
     model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
     model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
+    model.addConstr(w_gender[k] <= 6)
 
-for j in SEMINARS:
-    model.addConstr(w_citizenship[k] >= MSEM[k] - FSEM[k])
-    model.addConstr(w_citizenship[k] >= FSEM[k] - MSEM[k])
+
     
+for k in SEMINARS:
+    model.addConstr(w_citizenship[k] >= US_SEM[k] - NonUS_SEM[k])
+    model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
+    model.addConstr(NonUS_SEM[k] <= 3)
 
 # Find Utopia Point for Rank
 ############################
@@ -230,8 +233,6 @@ for i in STUDENTS:
         rank_val += rank_weights[j]*x[i,j]
 
 model.setObjective(rank_val, GRB.MINIMIZE)
-
-model.setParam('TimeLimit', 120)
 
 model.optimize()
 
@@ -270,7 +271,6 @@ model.optimize()
 
 zU_Citizen = model.getObjective().getValue()
 
-
 # Record the Utopia Point for Citizenship
 for k in SEMINARS:
 	W_C_Star[k] = [w_gender[k].X, w_citizenship[k].X]
@@ -292,7 +292,6 @@ for i in STUDENTS:
 
 zN_Rank = max(f1, f2, f3)
 
-
 ## Find Nadir Point for Gender
 ##############################
 f1 = 0
@@ -305,11 +304,13 @@ for j in SEMINARS:
     
 zN_Gender = max(f1, f2, f3)
 
+
 ## Find Nadir Point for Citizenship
 ###################################
 f1 = 0
 f2 = 0
 f3 = 0
+
 for j in SEMINARS:
     f1 += W_R_Star[j][1]
     f2 += W_G_Star[j][1]
@@ -317,44 +318,31 @@ for j in SEMINARS:
     
 zN_Citizen = max(f1, f2, f3)
 
-		
-		
+
 ## Solve the multiobjective assignment problem
 ##############################################
-
-
-# Set the maximum solve time for complete model (in seconds)
-model.setParam('TimeLimit', 600)
-
-# Optimize over the weighted (and scaled) objective function
-
-rank_objective = 0
-
 # Normalize the rank objective function 
-rank_objective = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
-
-gender_objective = 0
+f_rank = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
 
 # Normalize gender objective function
-gender_objective = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
-
-citizenship_objective = 0
+f_gender = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
 
 # Normalize ctizienship objective function
-citizenship_objective = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen)
+f_stu_type = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen + 1)
 
-obj_function = (obj_coef[1] * rank_objective) + (obj_coef[2] * gender_objective) + (obj_coef[3]*citizenship_objective) 
+# Construct blended multi-objectives
+obj_functions = sum([obj_coef[1] * f_rank, obj_coef[2] * f_gender, 
+                     obj_coef[3] * f_stu_type])
 
-model.setObjective(obj_function, GRB.MINIMIZE)
-
+model.setObjective(obj_functions, GRB.MINIMIZE)
 model.optimize()
 
 optimal_value = model.getObjective().getValue()
 
 
 
-
 # Print out the solution
+
 print("The total number of first-year students: " + str(len(STUDENTS)))
 print("The total number of seminars: " + str(len(SEMINARS)))
 print("")
@@ -366,6 +354,7 @@ tot_NonUS = 0
 
 for k in SEMINARS:
     tot_female += FSEM[k].X
+    
     tot_male += MSEM[k].X
     tot_US += US_SEM[k].X
     tot_NonUS += NonUS_SEM[k].X
@@ -518,8 +507,8 @@ for i in STUDENTS:
         utopian_rank += rank_weights[j]*x[i,j].X
 
 for j in SEMINARS:
-    utopian_gender += abs(MSEM[j].X - FSEM[j].X)
-    utopian_citizen += abs(US_SEM[j].X - NonUS_SEM[j].X) 
+    utopian_gender += (MSEM[j].X - FSEM[j].X)* (MSEM[j].X - FSEM[j].X)
+    utopian_citizen += (US_SEM[j].X - NonUS_SEM[j].X) * (US_SEM[j].X - NonUS_SEM[j].X)
 
 print("Rank Utopia is: " + str(int(zU_Rank)))
 print("Gender Utopia is: " + str(int(zU_Gender)))
@@ -532,13 +521,22 @@ print("Citizenship Penalty is: " + str(int(utopian_citizen)))
 print("")
 print("================================================")
 
+################ Compute Variance #########################
 
 for k in SEMINARS:
-    print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
-        " students with " + str(round(MSEM[k].X)) + " males and " + str(round(FSEM[k].X)) + " females; " +
-        str(round(US_SEM[k].X)) + " US and " + str(round(NonUS_SEM[k].X)) + " non-US; ")
+     print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
+        " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
+        str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
+   
 
-f = open("fysAssignmentLinear.txt", "w")
+
+gen_list = [abs(MSEM[k].x - FSEM[k].X) for k in SEMINARS]
+stu_list = [abs(US_SEM[k].x - NonUS_SEM[k].X) for k in SEMINARS]
+
+print('Gender variance: ' + str(statistics.pvariance(gen_list)))
+print('stu-type variance: ' + str(statistics.pvariance(stu_list)))
+
+f = open("fysAssignmentNonLinear.txt", "w")
 
 for i in STUDENTS:
     for j in [1,2,3,4,5,6]: 
@@ -553,18 +551,20 @@ f.close()
 ######################### Plot the result ########################
 
 x = np.arange(len(SEMINARS))
-y1 = []
-y2 = []
-y3 = []
-y4 = []
+y1 = [0 for i in range(len(SEMINARS))]
+y2 = [0 for i in range(len(SEMINARS))]
+y3 = [0 for i in range(len(SEMINARS))]
+y4 = [0 for i in range(len(SEMINARS))]
 
+j = 0
 for k in SEMINARS:
-    y1 = MSEM[k].X
-    y2 = FSEM[k].X
-    y3 = US_SEM[k].X
-    y4 = NonUS_SEM[k].X
+    y1[j] = MSEM[k].X
+    y2[j] = FSEM[k].X
+    y3[j] = US_SEM[k].X
+    y4[j] = NonUS_SEM[k].X
+    j+=1
     
-width = 0.2
+width = 0.25
 
 
 fig, axs = plt.subplots()
