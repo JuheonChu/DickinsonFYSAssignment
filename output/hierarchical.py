@@ -10,6 +10,7 @@ from gurobipy import GRB
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import statistics 
 
 
 model = Model('Student Assignment Problem')
@@ -186,10 +187,12 @@ for k in SEMINARS:
 for k in SEMINARS:
     model.addConstr(w_gender[k] >= MSEM[k] - FSEM[k])
     model.addConstr(w_gender[k] >= FSEM[k] - MSEM[k])
+    model.addConstr(w_gender[k] <= 6)
 
 for k in SEMINARS:
     model.addConstr(w_citizenship[k] >= US_SEM[k] - NonUS_SEM[k])
     model.addConstr(w_citizenship[k] >= NonUS_SEM[k] - US_SEM[k])
+    model.addConstr(NonUS_SEM[k] <= 3)
     
 
 # Find Utopia Point for Rank
@@ -414,38 +417,19 @@ print("")
 print("================================================")
 
 ################ Compute Variance #########################
-gender_mean = 0.0
-stu_type_mean = 0.0
-gender_variance = [0.0 for i in range(len(SEMINARS))]
-stu_type_variance = [0.0 for i in range(len(SEMINARS))]
-i = 0
+
 for k in SEMINARS:
-    gender_imbalance = abs(int(FSEM[k].X) - int(MSEM[k].X)) / (int(FSEM[k].X) + int(MSEM[k].X))
-    stu_type_imbalance = abs(int(US_SEM[k].X) - int(NonUS_SEM[k].X)) / (int(US_SEM[k].X) + int(NonUS_SEM[k].X))
-    gender_mean += gender_imbalance
-    stu_type_mean += stu_type_imbalance 
-    gender_variance[i] = gender_imbalance
-    stu_type_variance[i] = stu_type_imbalance
+   
     print("Seminar " + str(k) + " has " + str(int(FSEM[k].X + MSEM[k].X)) + 
         " students with " + str(int(MSEM[k].X)) + " males and " + str(int(FSEM[k].X)) + " females; " +
         str(int(US_SEM[k].X)) + " US and " + str(int(NonUS_SEM[k].X)) + " non-US; ")
-    i+=1
+ 
 
-gender_mean /= len(SEMINARS)
-stu_type_mean /= len(SEMINARS)
+gen_list = [abs(MSEM[k].x - FSEM[k].x) for k in SEMINARS]
+stu_list = [abs(US_SEM[k].x - NonUS_SEM[k].x) for k in SEMINARS]
 
-gender_res = 0.0
-stu_type_res = 0.0
-i = 0
-
-for k in SEMINARS:
-    gender_res += (gender_variance[i] - gender_mean) * (gender_variance[i] - gender_mean)
-    stu_type_res += (stu_type_variance[i]-stu_type_mean) * (stu_type_variance[i]-stu_type_mean)
-gender_res = (gender_res / len(SEMINARS)) * 100
-stu_type_res = (stu_type_res / len(SEMINARS)) * 100
-
-print('Gender variance: ' + str(gender_res) + "%")
-print('Student-type variance: ' + str(stu_type_res) + "%")
+print('Gender variance: ' + str(statistics.pvariance(gen_list)) + "%")
+print('Student-type variance: ' + str(statistics.pvariance(stu_list)) + "%")
 f = open("fysAssignmentNonLinear.txt", "w")
 
 for i in STUDENTS:
