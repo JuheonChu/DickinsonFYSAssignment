@@ -1,4 +1,4 @@
-# Multiple approaches to achieve diverstiy in automated First-Year Seminar Assignment Program
+# Improving Diversity and Preferred Assignment in Dickinson’s First-Year Seminar Selection Process Using Optimization Models
 
 This is a student-faculty collaborative research with Professor Dick Forrester at Dickinson College to accomplish assigning Dickinson first-year students into their First-Year Seminar courses in timely and efficient manner.
 
