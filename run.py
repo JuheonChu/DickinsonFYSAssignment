@@ -170,6 +170,29 @@ for i in STUDENTS:
 
 
 
+
+# Prompt the user for general lower and upper bounds for course capacities
+general_lower_bound = int(input("What is the general lower bound for course capacities? "))
+general_upper_bound = int(input("What is the general upper bound for course capacities? "))
+
+# Ask for seminars with specific capacities
+specific_seminars = input("Do you have any seminars that you want to set with different upper bound and lower bound capacities? (Y/N) ")
+
+bounds = {}
+
+seminar_ids = []
+
+if specific_seminars == "Y":
+    sem_ids = input("Please enter the seminar IDs separated by commas (e.g. 11, 12, 13): ").split(",")
+    seminar_ids = sem_ids
+    for sem_id in sem_ids:
+        lower = int(input(f"What is the lower bound for seminar {sem_id.strip()}? "))
+        upper = int(input(f"What is the upper bound for seminar {sem_id.strip()}? "))
+        bounds[sem_id.strip()] = (lower, upper)
+
+print(bounds)
+
+
 for k in SEMINARS: 
     
     exprMale = 0
@@ -198,19 +221,30 @@ for k in SEMINARS:
                     exprNonUS += x[i,j]
 			
 
+    # Use specific bounds if available, otherwise use general bounds
+    lower_bound = bounds.get(str(k), (general_lower_bound, general_upper_bound))[0]
+    upper_bound = bounds.get(str(k), (general_lower_bound, general_upper_bound))[1]
+    
+    
+
     model.addConstr(MSEM[k] == exprMale, 'NumberMale('+str(k) +')')
     model.addConstr(FSEM[k] == exprFemale, 'NumberFemale('+str(k) +')')
     model.addConstr(US_SEM[k] == exprUS, 'NumberUS('+str(k) +')')
     model.addConstr(NonUS_SEM[k] == exprNonUS, 'NumberNonUS('+str(k) +')')
      
+    
+    #model.addConstr(MSEM[k] + FSEM[k] <= 15, 'UpperCapacity('+str(k)+')')
+    
     # Set seminar capacity (Upper bound)
-    model.addConstr(MSEM[k] + FSEM[k] <= 15, 'Capacity('+str(k)+')')
+    #model.addConstr(MSEM[k] + FSEM[k] <= 15, 'Capacity('+str(k)+')')
     
     # Set seminar lower bound capacity
-    if k != 30: 
-        model.addConstr(MSEM[k] + FSEM[k] >= 10, 'LowerCapacity('+str(k)+')')
-
-
+    if k in seminar_ids: 
+        model.addConstr(MSEM[k] + FSEM[k] >= lower_bound, 'LowerCapacity('+str(k)+')')
+        model.addConstr(MSEM[k] + FSEM[k] <= upper_bound, 'UpperCapacity('+str(k)+')')
+    else: 
+        model.addConstr(MSEM[k] + FSEM[k] >= general_lower_bound, 'LowerCapacity('+str(k)+')')
+        model.addConstr(MSEM[k] + FSEM[k] <= general_upper_bound, 'UpperCapacity('+str(k)+')')
 
 # Set the constraints for each w_gender and w_citizenship 
 for k in SEMINARS:
