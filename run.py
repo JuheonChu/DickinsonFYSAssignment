@@ -188,10 +188,14 @@ if specific_seminars == "Y":
     for sem_id in sem_ids:
         lower = int(input(f"What is the lower bound for seminar {sem_id.strip()}? "))
         upper = int(input(f"What is the upper bound for seminar {sem_id.strip()}? "))
-        bounds[sem_id.strip()] = (lower, upper)
+        bounds[int(sem_id.strip())] = (lower, upper)
 
-print(bounds)
+for i in range(len(seminar_ids)):
+    seminar_ids[i] = int(seminar_ids[i])
 
+print(seminar_ids)
+# print(bounds[30][0])
+# print(bounds[30][1])
 
 for k in SEMINARS: 
     
@@ -236,13 +240,15 @@ for k in SEMINARS:
     #model.addConstr(MSEM[k] + FSEM[k] <= 15, 'UpperCapacity('+str(k)+')')
     
     # Set seminar capacity (Upper bound)
-    #model.addConstr(MSEM[k] + FSEM[k] <= 15, 'Capacity('+str(k)+')')
+    #if k != 30:
+        #model.addConstr(MSEM[k] + FSEM[k] >= 10, 'Capacity('+str(k)+')')
     
     # Set seminar lower bound capacity
     if k in seminar_ids: 
-        model.addConstr(MSEM[k] + FSEM[k] >= lower_bound, 'LowerCapacity('+str(k)+')')
-        model.addConstr(MSEM[k] + FSEM[k] <= upper_bound, 'UpperCapacity('+str(k)+')')
+        model.addConstr(MSEM[k] + FSEM[k] >= bounds[k][0], 'LowerCapacity('+str(k)+')')
+        model.addConstr(MSEM[k] + FSEM[k] <= bounds[k][1], 'UpperCapacity('+str(k)+')')
     else: 
+        print(k)
         model.addConstr(MSEM[k] + FSEM[k] >= general_lower_bound, 'LowerCapacity('+str(k)+')')
         model.addConstr(MSEM[k] + FSEM[k] <= general_upper_bound, 'UpperCapacity('+str(k)+')')
 
