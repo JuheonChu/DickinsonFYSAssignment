@@ -237,12 +237,6 @@ for k in SEMINARS:
     model.addConstr(NonUS_SEM[k] == exprNonUS, 'NumberNonUS('+str(k) +')')
      
     
-    #model.addConstr(MSEM[k] + FSEM[k] <= 15, 'UpperCapacity('+str(k)+')')
-    
-    # Set seminar capacity (Upper bound)
-    #if k != 30:
-        #model.addConstr(MSEM[k] + FSEM[k] >= 10, 'Capacity('+str(k)+')')
-    
     # Set seminar lower bound capacity
     if k in seminar_ids: 
         model.addConstr(MSEM[k] + FSEM[k] >= bounds[k][0], 'LowerCapacity('+str(k)+')')
