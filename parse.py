@@ -1,16 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Dec  6 23:23:14 2022
-
-Generates an excel file to be loaded into run.py
-
-@author: johnc
-"""
-
 import pandas as pd
 import xlsxwriter
 
-seminar_selection_df = pd.read_excel('2023_Seminar_Selections_Initial.xlsx', sheet_name='ag-grid')
+seminar_selection_df = pd.read_excel('2023_Seminar_Selections_Initial.xlsx')
 
 
 # Function to fill in missing Seminar Ids
@@ -37,6 +29,13 @@ def preprocess_data(group):
 seminar_selection_df = seminar_selection_df.groupby('Student ID').apply(preprocess_data)
 
 
+# Extract unique student information for citizenship and gender
+unique_students = seminar_selection_df.drop_duplicates(subset=['Student ID'])
+unique_stu_id = unique_students['Student ID'].tolist()
+unique_gender = [1 if g == 'M' else 0 for g in unique_students['Gender']]
+unique_citizen = [1 if c == 'US' else 0 for c in unique_students['Citizen Code']]
+
+
 stu_id = seminar_selection_df['Student ID'].tolist()
 seminar_id = seminar_selection_df['Seminar Id'].tolist()
 seminar_id = [int(x) if pd.notna(x) else 0 for x in seminar_id]
@@ -48,6 +47,9 @@ citizen = seminar_selection_df['Citizen Code'].tolist()
 gender = [1 if g == 'M' else 0 for g in gender]
 # Convert 'US' to 1 and others to 0
 citizen = [1 if c == 'US' else 0 for c in citizen]
+
+
+
 
 seminar_id_write = [None] * len(seminar_id)
 for i in range(len(seminar_id)):
@@ -90,17 +92,21 @@ course_num_dict={
     'seminar_no': list(set(seminar_id_write))
     }
 
-col_num = 0
+# Write to 'citizenship' sheet
+citizenship_dict = {'student_id': unique_stu_id, 'citizen': unique_citizen}
+col = 0
 for key, value in citizenship_dict.items():
-    worksheet_citizenship.write(0, col_num, key)
-    worksheet_citizenship.write_column(1, col_num, value)
-    col_num += 1
+    worksheet_citizenship.write(0, col, key)
+    worksheet_citizenship.write_column(1, col, value)
+    col += 1
 
-col_num = 0
+# Write to 'gender' sheet
+gender_dict = {'stu_id': unique_stu_id, 'gender': unique_gender}
+col = 0
 for key, value in gender_dict.items():
-    worksheet_gender.write(0, col_num, key)
-    worksheet_gender.write_column(1, col_num, value)
-    col_num += 1
+    worksheet_gender.write(0, col, key)
+    worksheet_gender.write_column(1, col, value)
+    col += 1
 
 col_num = 0
 for key, value in obj_coef_dict.items():
@@ -127,4 +133,3 @@ for key, value in course_num_dict.items():
     col_num += 1    
     
 workbook.close()
-
