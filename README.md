@@ -36,8 +36,6 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
 ### 2. Install xlsxwriter
 - This is required to successfully automate the given information from Dickinson College to load it into run.py.
 
-## Pipeline
-
 
 ## Dataset
 
