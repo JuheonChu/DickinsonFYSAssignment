@@ -1,4 +1,4 @@
-## About this project
+![image (10)](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/4f5fe0fa-c436-437f-b75f-73d54a805f7a)## About this project
 - Title: Improving Diversity and Preferred Assignment in Dickinson’s First-Year Seminar Selection Process Using Optimization Models
 - Advisor: [Professor Dick Forrester](https://www.dickinson.edu/dickforrester) 
 
@@ -38,6 +38,7 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
 
 ## Pipeline
 
+
 ## Dataset
 
   ### DickinsonFirstYearSeminar.xlsx excel spreadsheet
@@ -66,8 +67,7 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
   
   - `run.py`: This assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities. Among many versions of running this program, run.py specifically describes the program that shows the best performance in timely and efficient manner.
   - `parse.py`: This program parses the data that was provided by Dickinson College and generates the `DickinsonFirstYearSeminar.xlsx` file to be loaded for `run.py`.
-    
-
+  - `seminar_frequency.py`: This program provides the frequency distribution of the seminars. 
  
 
 
