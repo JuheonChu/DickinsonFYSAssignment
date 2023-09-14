@@ -1,4 +1,4 @@
-![image (10)](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/4f5fe0fa-c436-437f-b75f-73d54a805f7a)## About this project
+## About this project
 - Title: Improving Diversity and Preferred Assignment in Dickinson’s First-Year Seminar Selection Process Using Optimization Models
 - Advisor: [Professor Dick Forrester](https://www.dickinson.edu/dickforrester) 
 
