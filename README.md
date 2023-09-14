@@ -39,10 +39,8 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
 - This is required to successfully automate the given information from Dickinson College to load it into run.py.
 
 ## Pipeline
-- d
-- d
-- d
-    
+![Pipeline](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/ef5ab142-c29a-4a5c-bf0b-36cab80a643e)
+
 ## Program Functionality
   
   - `run.py`: This assigns Dickinson first-year students into 40+ seminar courses aiming to balance gender and student-type ratios while maintaining the course capacities. Among many versions of running this program, run.py specifically describes the program that shows the best performance in timely and efficient manner.
