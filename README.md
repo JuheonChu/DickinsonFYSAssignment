@@ -13,12 +13,9 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
 - Broaden the impact of this research to other academic institutions.
 - Try alternative optimization models to implement the same feature such as hierarchical and blended multi-criteria optimization models.
 
-## Research Materials
-- Assignment Models
-- Linear/Non-linear Programming
-- Integer Programming
-- Multi-objective convex quadratic functions (Hierarchial, Combining blended & Hierarchial)
-- Normalization 
+## Approaches 
+1. Blended Optimization Model
+2. Hierarchical Optimization Model
 
 ## PreRequisite
  - Python
