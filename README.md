@@ -29,7 +29,7 @@ The following app
 
 ## How to set up Gurobi solver?
 
-### 1. Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
+### 1. Download Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
 
 - Create your account [here](https://portal.gurobi.com/iam/login/).
 - Choose the OS that supports your local machine and download the Gurobi Solver that corresponds to your system.
@@ -38,8 +38,8 @@ The following app
 
 ![environment setting](https://user-images.githubusercontent.com/35699839/201580110-9a733a25-05d4-4240-a7f1-f336c2e76b5a.png)
 
-### 2. Install xlsxwriter
-- This is required to successfully automate the given information from Dickinson College to load it into run.py.
+### 2. Python Install
+- Follow the protocol denoted [here](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-).
 
 ## Pipeline
 ![Pipeline](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/ef5ab142-c29a-4a5c-bf0b-36cab80a643e)
