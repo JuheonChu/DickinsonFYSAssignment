@@ -1,2 +1,7 @@
-## This directory delineates the statistical outcomes of the assignment qualities that follow from our 3 opimization approaches.
+## Comparative Analysis
+
+1. Original program
+   - run time: 10 minutes
+   - Gender variance:
+   - 
 
