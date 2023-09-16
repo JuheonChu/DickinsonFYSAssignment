@@ -22,7 +22,7 @@ The following app
 2. Hierarchical Optimization Model
 3. Combining Blended and Hierarchical Objectives
 
-## PreRequisite
+## Prerequisite
  - Python
  - PyCharm/spyder/Python Idle
  - Gurobi solver
