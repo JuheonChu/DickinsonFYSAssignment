@@ -17,7 +17,7 @@ We want to convey our sincere gratitude to the [Gurobi](https://support.gurobi.c
 - Undertake comparative analysis of the assignment qualities performed by those alternative optimization approaches.
 
 ## Approaches 
-The following app
+We performed a comparative analysis of assignment quality using the following optimization approaches. Each one is aimed for a distinct purpose.
 1. Blended Optimization Model
 2. Hierarchical Optimization Model
 3. Combining Blended and Hierarchical Objectives
