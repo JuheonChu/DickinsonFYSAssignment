@@ -4,7 +4,7 @@
 - Title: Improving Diversity and Preferred Assignment in Dickinson’s First-Year Seminar Selection Process Using Optimization Models
 - Author: [John Chu](https://www.linkedin.com/in/juheonchu/), [Professor Dick Forrester](https://www.dickinson.edu/dickforrester) 
 
-### Abstract: 
+### Background: 
 Dickinson currently uses a process developed by Professor Dick Forrester and Dr. Thanh To (’11) to assign students to First-Year Seminars (FYS). This process utilizes a nonlinear multicriteria optimization model with the goal of assigning students to one of their top-ranked seminars while balancing the classes with regard to gender and the number of international students. In this study, we investigate alternative approaches aiming to improve the run-time and quality of the assignments. Specifically, we consider the linearization of the nonlinear objectives and the use of the hierarchical optimization model. These improvements resulted in a significant reduction in runtime and offer improved flexibility in adjusting assignment outcomes. The overarching aim of this study is to contribute robust optimization approaches that can be widely adopted across educational institutions.
 
 ## Acknowledgement
