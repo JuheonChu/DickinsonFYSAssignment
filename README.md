@@ -27,11 +27,11 @@ The following app
  - PyCharm/spyder/Python Idle
  - Gurobi solver
 
-## Set Up
+## How to set up Gurobi solver?
 
 ### 1. Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
 
-- Choose the right Operating System that fits into the local machine and download the Gurobi Solver
+- Choose the OS that supports your local machine and download the Gurobi Solver that corresponds to your system.
 - Issue the Gurobi License ID. 
 - Customize the Environment Settings by setting the System variables.
 
