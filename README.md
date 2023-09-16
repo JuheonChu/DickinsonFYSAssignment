@@ -31,6 +31,7 @@ The following app
 
 ### 1. Install [Python Gurobi Solver](https://www.gurobi.com/downloads/gurobi-software/)
 
+- Create your account [here](https://portal.gurobi.com/iam/login/).
 - Choose the OS that supports your local machine and download the Gurobi Solver that corresponds to your system.
 - Issue the Gurobi License ID. 
 - Customize the Environment Settings by setting the System variables.
