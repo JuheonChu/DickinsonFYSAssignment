@@ -42,7 +42,7 @@ The following app
 - Follow the protocol denoted [here](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-).
 
 ## Pipeline
-![Pipeline](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/ef5ab142-c29a-4a5c-bf0b-36cab80a643e)
+![Pipeline](https://github.com/JuheonChu/DickinsonFYSAssignment/assets/35699839/a92f6d66-cdd0-4341-9803-d2a7a46a5c42)
 
 ## Program Functionality
   
