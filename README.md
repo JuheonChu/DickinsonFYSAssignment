@@ -14,7 +14,7 @@ We want to convey our sincere gratitude to the [Gurobi](https://support.gurobi.c
 - Improve the program efficiency and quality of the assignement of the existing program.
 - The deployment of this computer program in practice for FYS assignment in Summer 2024 for students in Class of 2028.
 - Broaden the impact of this research to other academic institutions.
-- Try alternative optimization models to implement the same feature such as hierarchical and blended multi-criteria optimization models.
+- Undertake comparative analysis of the assignment qualities performed by those alternative optimization approaches.
 
 ## Approaches 
 The following app
