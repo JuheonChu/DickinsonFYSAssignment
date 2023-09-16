@@ -7,6 +7,9 @@
 ### Abstract: 
 Dickinson currently uses a process developed by Professor Dick Forrester and Dr. Thanh To (’11) to assign students to First-Year Seminars (FYS). This process utilizes a nonlinear multicriteria optimization model with the goal of assigning students to one of their top-ranked seminars while balancing the classes with regard to gender and the number of international students. In this study, we investigate alternative approaches aiming to improve the run-time and quality of the assignments. Specifically, we consider the linearization of the nonlinear objectives and the use of the hierarchical optimization model. These improvements resulted in a significant reduction in runtime and offer improved flexibility in adjusting assignment outcomes. The overarching aim of this study is to contribute robust optimization approaches that can be widely adopted across educational institutions.
 
+## Acknowledgement
+We want to convey our sincere gratitude to the [Gurobi](https://support.gurobi.com/hc/en-us) community for its invaluable resources. The comprehensive [Documentations](https://www.gurobi.com/documentation/10.0/refman/working_with_multiple_obje.html) and responsive Q&A support significantly facilitated the implementation of the enhancements we aforementioned. For those new to the platform, Gurobi offers an accessible and well-structured manual available [here](https://www.gurobi.com/documentation/10.0/refman/working_with_multiple_obje.html).
+
 ## Objective
 - Improve the program efficiency and quality of the assignement of the existing program.
 - The deployment of this computer program in practice for FYS assignment in Summer 2024 for students in Class of 2028.
@@ -14,8 +17,10 @@ Dickinson currently uses a process developed by Professor Dick Forrester and Dr.
 - Try alternative optimization models to implement the same feature such as hierarchical and blended multi-criteria optimization models.
 
 ## Approaches 
+The following app
 1. Blended Optimization Model
 2. Hierarchical Optimization Model
+3. Combining Blended and Hierarchical Objectives
 
 ## PreRequisite
  - Python
