@@ -22,7 +22,7 @@ We performed a comparative analysis of assignment quality using the following op
    - This model targets the comprehensive balance of three objectives. We minimized the linear combination of weighted rank coefficients and penalties of the objectives. Here is the example.
      [Insert the image that describes the system of objective functions.]
 2. **Hierarchical Optimization Model**
-   - This model aims to prioritize the one over other objectives. We can adopt this approach when we want to manipulate the outcome of the assignment rather than focusing on the comprehensive balance of conflicting objectives. The takeaway of this model can be described as follows.
+   - This model aims to prioritize one over the other objectives. We can adopt this approach when we want to manipulate the outcome of the assignment rather than focusing on the comprehensive balance of conflicting objectives. The takeaway of this model can be described as follows.
      [Insert the image that shows the highlight of the hierarchical optimization model]
 3. **Combining Blended and Hierarchical Objectives**
 
