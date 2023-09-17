@@ -19,8 +19,12 @@ We want to convey our sincere gratitude to the [Gurobi](https://support.gurobi.c
 ## Approaches 
 We performed a comparative analysis of assignment quality using the following optimization approaches. Each is aimed for a distinct purpose. [This documentation](https://www.gurobi.com/documentation/10.0/refman/working_with_multiple_obje.html) outlines the detailed explanation of those approaches including the exemplary implementations in GurobiPy. 
 1. Blended Optimization Model
+   - This model targets the comprehensive balance of three objectives. We minimized the linear combination of weighted rank coefficients and penalties of the objectives. Here is the example.
+     [Insert the image that describes the system of objective functions.]
 2. Hierarchical Optimization Model
-3. Combining Blended and Hierarchical Objectives
+   - This model aims to prioritize the one over other objectives. We can adopt this approach when we want to manipulate the outcome of the assignment rather than focusing on the comprehensive balance of conflicting objectives. The takeaway of this model can be described as follows.
+     [Insert the image that shows the highlight of the hierarchical optimization model]
+4. Combining Blended and Hierarchical Objectives
 
 ## Prerequisite
  - Python
