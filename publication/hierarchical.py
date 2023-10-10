@@ -350,22 +350,29 @@ zN_Citizen = max(f1, f2, f3)
 # Normalize the rank objective function 
 f_rank = rank_val
 
+model.setObjective(f_rank, GRB.MINIMIZE)
+
+model.optimize()
+
+zU_Rank = model.getObjective().getValue()
+
 # Normalize gender objective function
 f_gender = sum(w_gender.values())
+
+model.addConstr(f_rank <= zU_Rank * 0.9999999999999999999999999999999999999)
+
+model.setObjective(f_gender, GRB.MINIMIZE)
+
+model.optimize()
+
+zU_gender = model.getObjective().getValue()
 
 # Normalize ctizienship objective function
 f_citizenship = sum(w_citizenship.values())
 
-obj_functions = [f_rank, f_gender, f_citizenship]
+model.addConstr(f_gender >= zU_Gender * 1.00000000000000000000000000000000001)
 
-obj_names = ["rank", "gender", "citizenship"]
-
-obj_priority = [1,2,3]
-
-# Set and configure objectives
-for i in range(len(obj_functions)):
-    obj_function = obj_functions[i]
-    model.setObjectiveN(expr = obj_function, index = i, priority = obj_priority[i], weight = obj_coef[i+1], abstol = 0, reltol=0.00000000000000000000001, name = obj_names[i])
+model.setObjective(f_citizenship, GRB.MINIMIZE)
 
 
 model.optimize()
