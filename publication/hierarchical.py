@@ -348,13 +348,13 @@ zN_Citizen = max(f1, f2, f3)
 ## Solve the multiobjective assignment problem
 ##############################################
 # Normalize the rank objective function 
-f_rank = (rank_val - zU_Rank) / (zN_Rank - zU_Rank)
+f_rank = rank_val
 
 # Normalize gender objective function
-f_gender = (sum(w_gender.values()) - zU_Gender) / (zN_Gender - zU_Gender)
+f_gender = sum(w_gender.values())
 
 # Normalize ctizienship objective function
-f_citizenship = (sum(w_citizenship.values()) - zU_Citizen) / (zN_Citizen - zU_Citizen + 1)
+f_citizenship = sum(w_citizenship.values())
 
 obj_functions = [f_rank, f_gender, f_citizenship]
 
@@ -365,7 +365,7 @@ obj_priority = [1,2,3]
 # Set and configure objectives
 for i in range(len(obj_functions)):
     obj_function = obj_functions[i]
-    model.setObjectiveN(expr = obj_function, index = i, priority = obj_priority[i], weight = obj_coef[i+1], abstol = 0, reltol=0.05, name = obj_names[i])
+    model.setObjectiveN(expr = obj_function, index = i, priority = obj_priority[i], weight = obj_coef[i+1], abstol = 0, reltol=0.00000000000000000000001, name = obj_names[i])
 
 
 model.optimize()
